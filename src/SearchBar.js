@@ -4,17 +4,25 @@ import './App.css';
 
 const SearchBar = (props) => {
   let [keyword, setKeyword] = useState("")
-  let [newData, setNewData] = useState(props.movies)
+  let [newData, setNewData] = useState(props.movies.title)
   
   const load = _ => {
-    axios.get('https://react-movies-database-default-rtdb.firebaseio.com/.json').then(response => {
-      setNewData(response.data)
+    if(localStorage.isAuth){
+    axios.get('https://react-movies-database-default-rtdb.firebaseio.com/' + localStorage.userId + '.json').then(response => {
+      setNewData(response.data.title)
+    })}
+    else {
+      axios.get('https://movie-database-cc215-default-rtdb.firebaseio.com/Table.json').then(response => {
+        setNewData(response.data.title)
     })
   }
+}
   useEffect(() => {
     load();
   }, [])
 
+  console.log(['newData'],newData)
+  
   const onChangeHandler = event => {
     setKeyword(event.target.value)
     props.setMovies(newData.filter(entry => Object.values(entry).some(val => typeof val === "string" && val.toLocaleLowerCase().includes(event.target.value.toLocaleLowerCase()))));

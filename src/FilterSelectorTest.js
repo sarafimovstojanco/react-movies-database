@@ -7,7 +7,7 @@ const FilterSelector = (props) => {
     const [filterState, setFilterState] = useState(null)
   
   const load = _ => {
-    axios.get('https://react-movies-database-default-rtdb.firebaseio.com/.json').then(response => {
+    axios.get('https://react-movies-database-default-rtdb.firebaseio.com/Table.json').then(response => {
       setNewData(response.data)
     })
   }

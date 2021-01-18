@@ -1,12 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {BrowserRouter, Route, Switch } from 'react-router-dom'
 import './index.css';
 import App from './App';
+import Table from './Table'
+import 'bootstrap/dist/css/bootstrap.css';
+import Auth from './Auth';
+import FirebaseTest from './UserTable/FirebaseTests/FirebaseTest';
+
+console.warn = console.error = () => {};
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <BrowserRouter>
+    <Switch>
+      <Route path={'/auth'} component={Auth} />
+      <Route path={'/'} component={App} />
+    </Switch>
+  </BrowserRouter>
+  ,
   document.getElementById('root')
 );
 
