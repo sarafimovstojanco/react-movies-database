@@ -6,6 +6,7 @@ import Navigation from './Navigation.js'
 import PerPageSelector from './PerPageSelector';
 import Pagination from './Pagination';
 import Spinner from './Spinner/Spinner';
+import {connect} from 'react-redux';
 import './Table.css'
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,16 +14,12 @@ import firebase from 'firebase';
 
 
 const Table = (props) => {
-  const [movies, setMovies] = useState(props.movies)   
   const [loading, setLoading] = useState(false)
-  const [loadData, setLoadData] = useState()
+  const [moviesData, setMoviesData] = useState(props.mov)
   const [currentPage, setCurrentPage] = useState(1)
-  const [postsPerPage, setPostsPerPage] = useState(100)
+  const [postsPerPage, setPostsPerPage] = useState(10)
   const [ascending, setAscending] = useState(true)
-  console.log(movies)
 
-  // const queryParams = '?auth=' + localStorage.token + '&orderBy="userId"&equalTo="' + localStorage.userId +'"'
-  // axios.get('/orders.json' + queryParams)
   console.warn = console.error = () => {};
   var config = {
     apiKey: "apiKey",
@@ -30,106 +27,123 @@ const Table = (props) => {
     databaseURL: "https://react-movies-database-default-rtdb.firebaseio.com/",
     storageBucket: "bucket.appspot.com"
   };
-  //firebase.initializeApp(config)
 
   if (firebase.apps.length === 0) {
     firebase.initializeApp(config);
   }
-  
-  const load = _ => {
-      setMovies(props.movies)
-  }
-  useEffect(() => {
-    load();
-  }, [props.movies])
-  
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [postsPerPage])
 
-    const onHeaderClick = headerName => {
-      setMovies(sort(headerName))
-    }
-
-  //   for(let element of movies){
-  //     element.watched = false
+  // const load = _ => {
+  //     setMovies(currentPosts)
   // }
+//   useEffect(() => {
+//      setMoviesData(props.movies);
+//  }, [props.movies])
+// useEffect(() => {
+//   if (props.searching){
+//     setMoviesData(props.filtered)}
+// }, [props.filtered])
 
-    const sort = param => {
-      if(ascending){
-        setAscending(false)
-        return [].concat(movies)
-        .sort((a, b) => a[param] < b[param] ? 1 : -1)
-        .map((item, i) => 
-            item
-        );
-      }
-      else {
-        setAscending(true)
-        return [].concat(movies)
-        .sort((a, b) => a[param] > b[param] ? 1 : -1)
-        .map((item, i) => 
-            item
-        );
-      }
-    }
-    const saveTable = () => {
-      // const newArray=[...movies, {userId: localStorage.userId}]
-      // console.log(newArray)
-      let path = localStorage.userId
-      firebase.database().ref(path +"/").set(movies)
-      // axios.post('https://react-movies-database-default-rtdb.firebaseio.com/.json?auth=' + localStorage.token, newArray)
-      //        .then(response => {
-      //            console.log(response)
-      //    })
-      //        .catch( error => {
-      //            console.log(error)
-      //        });
-         }
-        
-    const indexOfLastPost = currentPage * postsPerPage
-    const indexOfFirstPost = indexOfLastPost - postsPerPage
-    const currentPosts = movies.slice(indexOfFirstPost, indexOfLastPost)
+//  useEffect(() => {
+//   if (!props.searching){
+//   setMoviesData(props.movies)};
+// }, [props.movies])
+  
+  // useEffect(() => {
+  //   setCurrentPage(1);
+  // }, [postsPerPage])
+  
+  if (props.loading) {
+    return <Spinner/>
+  }
+    // const onHeaderClick = headerName => {
+    //   props.setMovies(sort(headerName))
+    // }
+  
+    // const sort = param => {
+    //   if(ascending){
+    //     setAscending(false)
+    //     return [].concat(props.movies)
+    //     .sort((a, b) => a[param] < b[param] ? 1 : -1)
+    //     .map((item, i) => 
+    //         item
+    //     );
+    //   }
+    //   else {
+    //     setAscending(true)
+    //     return [].concat(props.movies)
+    //     .sort((a, b) => a[param] > b[param] ? 1 : -1)
+    //     .map((item, i) => 
+    //         item
+    //     );
+    //   }
+    // }
+    
+    const indexOfLastPost = props.currentCount
+    console.log(['moviesData'], props.currentPage)
+    console.log(['moviesData'], indexOfLastPost)
 
-    const paginate = pageNumber => setCurrentPage(pageNumber)
+    const indexOfFirstPost = indexOfLastPost - props.countPerPage
+    console.log(['moviesData'], props.countPerPage)
+    console.log(['moviesData'], props.currentCount)
 
+    //const currentPosts = moviesData.slice(indexOfFirstPost, indexOfLastPost)
+    // console.log(['moviesData'], indexOfLastPost)
+    // console.log(['moviesData'], indexOfFirstPost)
+    // console.log(['moviesData'], currentPosts)
+    // const paginate = pageNumber => 
+    // {
+      //setCurrentPage(pageNumber)
+      //setcurr(postsPerPage)
+    //}
     return (     
         <div class='Wrapper'>
         {loading ? <Spinner /> : null} 
-        {localStorage. isAuth ? <button class="btn btn-success"
-          onClick={saveTable}
-        >Save Table</button>: null}
         <table class={"table table-bordered text-center"}>
           <thead class="thead-dark">
             <TableHeader
-              onHeaderClick={onHeaderClick}
-              movies={currentPosts}
-              setMovies={setMovies}
+              movies={moviesData}
+              setMovies={props.setMovies}
              />
           </thead>
            <tbody>
             <TableData
-            movies={movies}
-            setMovies={setMovies}
-            pageSize={postsPerPage}
             indexOfFirstPost={indexOfFirstPost}
             indexOfLastPost={indexOfLastPost}
+            movies={moviesData}
+            setMovies={setMoviesData}
+            pageSize={postsPerPage}
             />
            </tbody>
         </table>
           <Pagination
+          movies={moviesData}
           postsPerPage={postsPerPage}
-          totalPosts={movies.length}
-          paginate={paginate}
+          totalPosts={moviesData.length}
+          //paginate={paginate}
           />
           <PerPageSelector 
-          pageSize={postsPerPage}
-          setPageSize={setPostsPerPage}
-          movies={movies}
-          setMovies={setMovies}
+          postsPerPage={postsPerPage}
+          setPostsPerPage={setPostsPerPage}
+          movies={moviesData}
+          setMovies={props.setMoviesData}
           />
      </div>
       )
 }
+const mapStateToProps = state => {
+  return {
+      state: state,
+      mov:state.movies,
+      loading: state.loading,
+      filtered: state.filteredMovies,
+      searching: state.searching,
+      countPerPage: state.countPerPage,
+      currentCount: state.currentCount,
+      currentPage: state.currentPage,
+      filteredPages: state.filteredPages,
+      totalCount: state.totalCount,
+      totalPages: state.totalPages,
+  }
+}
 
-export default Table
+export default connect(mapStateToProps)(Table);

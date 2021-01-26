@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
+import {connect} from 'react-redux'
 
-const Pagination = ({ postsPerPage, totalPosts, paginate }) => {
+
+const Pagination = (props) => {
     const pageNumbers = [];
     const [activePage, setActivePage] = useState(1)
 
-    const onPageClick = number => {
-        paginate(number)
-        setActivePage(number)
-    }
+    // const onPageClick = number => {
+    //     props.paginate(number)
+    //     setActivePage(number)
+    // }
 
     const isActive = number => {
         if (number === activePage) {
@@ -15,17 +17,26 @@ const Pagination = ({ postsPerPage, totalPosts, paginate }) => {
         }
     }
 
-    for (let i=1; i<= Math.ceil(totalPosts / postsPerPage); i++ ) {
+    for (let i=1; i<= props.totalPages; i++ ) {
         pageNumbers.push(i)
     }
     return (
         <nav>
             <ul className='pagination'>
-                {pageNumbers.map(number => (
+                {pageNumbers.map((number, index) => (
                     <li key={number} className={'page-item ' + isActive(number)}>
-                        <a onClick={() =>onPageClick(number)} href='1#' className='page-link'>
-                            {number}
-                        </a>
+                        <button 
+                        className={`button pagination-link ${
+                            props.currentPage === index + 1
+                              ? "is-current"
+                              : ""
+                          }`}
+                          aria-label="Page 1"
+                          onClick={() => props.loadExactPage(index + 1)}
+                          aria-current="page"
+                        >
+                          {index + 1}
+                        </button>
                     </li>
                 ))}
             </ul>
@@ -33,4 +44,43 @@ const Pagination = ({ postsPerPage, totalPosts, paginate }) => {
     )
 }
 
-export default Pagination;
+const mapStateToProps = state => {
+    return {
+        countPerPage: state.countPerPage,
+        currentCount: state.currentCount,
+        currentPage: state.currentPage,
+        filteredPages: state.filteredPages,
+        totalCount: state.totalCount,
+        totalPages: state.totalPages,
+    }
+}
+
+const mapDispatchToProps = dispatch =>{
+    return {
+        // loadData: () => dispatch({
+        //     type: "LOAD_DATA",
+        //     payload: 1
+        // }),
+        //
+        // nextPage: (page) => 
+        //     dispatch({
+        //         type: "LOAD_NEW_PAGE",
+        //         payload: page = 1
+        //     }),
+        //
+        // previousPage: (page) =>
+        //     dispatch({
+        //         type: "LOAD_NEW_PAGE",
+        //         payload: page = -1
+        //     }),
+        //
+        loadExactPage: (index) => 
+        {console.log(index)
+            dispatch({
+                type: "LOAD_EXACT_PAGE",
+                payload: index
+            })    
+    }}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Pagination);

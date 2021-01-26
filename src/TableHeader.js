@@ -1,27 +1,33 @@
 import React, {useState} from 'react'
-import FilterSelectorTest from './FilterSelectorTest'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {connect} from 'react-redux'
 
 const TableHeader = (props) => {
    let [isAuth, setIsAuth] = useState(localStorage.isAuth)
+   const [order, setOrder] = useState(true)
    let header =  [
-      {originalName: "Index", name: "Index"},
+      {originalName: "ranked", name: "Ranked"},
       {originalName: "imdbRating", name:"IMDB Rating"},
       {originalName: "originalTitle", name:"Title"},
       {originalName: "year", name: "Year"}];
-   
+     
+     const sortByInput = (item) =>{
+         props.sortBy(item, order)
+         setOrder(!order)
+      }
+
    if(isAuth) {
       header =  [
-         {originalName: "Index", name: "Index"},
+         {originalName: "ranked", name: "Ranked"},
          {originalName: "imdbRating", name:"IMDB Rating"},
          {originalName: "originalTitle", name:"Title"},
          {originalName: "year", name: "Year"},
-         {watched: "watched", name: "Watched"}]
+         {originalName: "watched", name: "Watched"}]
       }
 
    return header.map((item, index) => {
       return <th class="align-middle" key={index}>
-         <span onClick={() => props.onHeaderClick(item.originalName)}>{item.name}</span>
+         <span onClick={() => sortByInput(item.originalName)}>{item.name}</span>
          {/* {item.originalName === 'Watched' ? <FilterSelectorTest
                                  movies={props.movies}
                                  setMovies={props.setMovies}
@@ -30,4 +36,16 @@ const TableHeader = (props) => {
    })
 }
 
-export default TableHeader;
+const mapDispatchToProps = dispatch =>{
+   return {
+      sortBy: (item, order) =>{
+      console.log(item, order)
+      dispatch({
+         type: 'SORT_BY',
+         payload: item,
+         order: order
+      })}
+   } 
+}
+
+export default connect(null, mapDispatchToProps)(TableHeader)
