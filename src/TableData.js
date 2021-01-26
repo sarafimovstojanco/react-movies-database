@@ -52,30 +52,30 @@ function TableData(props) {
         </label>
     </div>
   )
-  // if (!props.searching){
-  //   return props.mov.slice(props.indexOfFirstPost, props.indexOfLastPost).map((st, index) => {
-  //       const { ranked, releaseDate, imdbRating, originalTitle, year, watched } = st
-  //       if(isAuth){return (
-  //           <tr key={releaseDate}>
-  //               <td >{ranked}</td>
-  //               <td>{imdbRating}</td>
-  //               <td>{originalTitle}</td>
-  //               <td>{year}</td>
-  //               <td>{watched ? <a onClick={() => onUndoHandler(index, ranked)}> ✔️ Watched </a> : <a onClick={() => onClickHandler(index, ranked)}>{checkBox}</a>}</td>
-  //           </tr>
+  if (!props.searching){
+    return props.mov.slice(props.indexOfFirstPost, props.indexOfLastPost).map((st, index) => {
+        const { ranked, releaseDate, imdbRating, originalTitle, year, watched } = st
+        if(isAuth){return (
+            <tr key={releaseDate}>
+                <td >{ranked}</td>
+                <td>{imdbRating}</td>
+                <td>{originalTitle}</td>
+                <td>{year}</td>
+                <td>{watched ? <a onClick={() => onUndoHandler(index, ranked)}> ✔️ Watched </a> : <a onClick={() => onClickHandler(index, ranked)}>{checkBox}</a>}</td>
+            </tr>
             
-  //           )}
-  //       else return (
-  //           <tr key={releaseDate}>
-  //               <td >{index + 1 }</td>
-  //               <td>{imdbRating}</td>
-  //               <td>{originalTitle}</td>
-  //               <td>{year}</td>
-  //           </tr>
-  //           )
-  //   })
-  //   }
-  // else {
+            )}
+        else return (
+            <tr key={releaseDate}>
+                <td >{index + 1 }</td>
+                <td>{imdbRating}</td>
+                <td>{originalTitle}</td>
+                <td>{year}</td>
+            </tr>
+            )
+    })
+    }
+  else {
     return props.filtered.map((st, index) => {
         const { ranked, releaseDate, imdbRating, originalTitle, year, watched } = st
         if(isAuth){return (
@@ -91,7 +91,7 @@ function TableData(props) {
      
     })
   }
-//}
+}
 
 const mapStateToProps  = (state) => (
         {mov: state.movies,
