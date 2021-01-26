@@ -45,24 +45,59 @@ export default function(state = initialState, action){
             loading:false,
         }
         case WATCHED:
+            if(!state.searching){
+                return update(state, {
+                    movies:{
+                      [action.payload]:{
+                          watched: {$set: true}
+                      }
+                    },
+                 loading: {$set: false}
+                 }
+                 )
+            }
+         else if (state.searching && (state.movies.ranked === state.filteredMovies.ranked)){
             return update(state, {
+                movies:{
+                  [action.ranked -1]:{
+                      watched: {$set: true}
+                  }
+                },
                 filteredMovies: {
                     [action.payload]:{
                         watched: {$set: true}
                     }
                   }
              })
-         
+            }
         case NOT_WATCHED:
+            if(!state.searching){
+                return update(state, {
+                    movies:{
+                      [action.payload]:{
+                          watched: {$set: false}
+                      }
+                    },
+                 loading: {$set: false}
+                 }
+                 )
+            }
+         else if (state.searching && (state.movies.ranked === state.filteredMovies.ranked)){
             return update(state, {
+                movies:{
+                  [action.ranked -1]:{
+                      watched: {$set: false}
+                  }
+                },
                 filteredMovies: {
                     [action.payload]:{
                         watched: {$set: false}
                     }
                   }
              })
+            }
             case DATABASE_SET:
-               databaseSet(state.filteredMovies)
+               databaseSet(state.movies)
             return {
                 ...state,
             }
