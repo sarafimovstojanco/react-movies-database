@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import {connect} from 'react-redux'
-
+import "bulma/css/bulma.min.css"
 
 const Pagination = (props) => {
     const pageNumbers = [];
@@ -57,23 +57,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch =>{
     return {
-        // loadData: () => dispatch({
-        //     type: "LOAD_DATA",
-        //     payload: 1
-        // }),
-        //
-        // nextPage: (page) => 
-        //     dispatch({
-        //         type: "LOAD_NEW_PAGE",
-        //         payload: page = 1
-        //     }),
-        //
-        // previousPage: (page) =>
-        //     dispatch({
-        //         type: "LOAD_NEW_PAGE",
-        //         payload: page = -1
-        //     }),
-        //
         loadExactPage: (index) => 
         {console.log(index)
             dispatch({

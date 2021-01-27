@@ -31,26 +31,6 @@ const Table = (props) => {
   if (firebase.apps.length === 0) {
     firebase.initializeApp(config);
   }
-
-  // const load = _ => {
-  //     setMovies(currentPosts)
-  // }
-//   useEffect(() => {
-//      setMoviesData(props.movies);
-//  }, [props.movies])
-// useEffect(() => {
-//   if (props.searching){
-//     setMoviesData(props.filtered)}
-// }, [props.filtered])
-
-//  useEffect(() => {
-//   if (!props.searching){
-//   setMoviesData(props.movies)};
-// }, [props.movies])
-  
-  // useEffect(() => {
-  //   setCurrentPage(1);
-  // }, [postsPerPage])
   
   if (props.loading) {
     return <Spinner/>

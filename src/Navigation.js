@@ -7,34 +7,15 @@ import {filterByValue} from './redux/actions'
 
 
 const Navigation = (props) => {
-  let [keyword, setKeyword] = useState("")
-  let [newData, setNewData] = useState(props.mov)
   let history = useHistory()
   let isSignUp = props.isAuth
   let [isAuth, setIsAuth] = useState(localStorage.isAuth)
-  //  const load = _ => {
-  //   if(localStorage.isAuth){
-  //     axios.get('https://react-movies-database-default-rtdb.firebaseio.com/' + localStorage.userId + '.json').then(response => {
-  //     setNewData(response.data)
-  //   }).catch(error => console.log(error))
-  // }
-  // else {
-  //   axios.get('https://react-movies-database-default-rtdb.firebaseio.com/Table.json').then(response => {
-  //     setNewData(response.data)
-  //   }).catch(error => console.log(error))
-  // }
-  //  }
-  useEffect(() => {
-    setNewData(props.movies);
-  }, [keyword])
-
+ 
   const filterByInput = (e) =>{
     let input = e.target.value
     props.dispatch(filterByValue({value: input}))
   }
-  //   setKeyword(event.target.value)
-  //   props.setMovies(newData.filter(entry => Object.values(entry).some(val => typeof val === "string" && val.toLocaleLowerCase().includes(event.target.value.toLocaleLowerCase()))));
-  // }
+ 
   let searchBar = isAuth ?  (
   <form class="form-inline">
     <input 
@@ -45,11 +26,6 @@ const Navigation = (props) => {
     onChange={(e) => filterByInput(e)}
     />
   </form>) : null
-
-  let table = isAuth ? 
-  (<li class="nav-item">
-  <a class="nav-link" href="/table">Table</a>
-  </li>) : null
 
   const onLoginHandler = () => {
     history.push('/auth')
@@ -88,9 +64,6 @@ return (
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item active">
-      {table}
       </li>
     </ul>
     <form class="form-inline my-2">

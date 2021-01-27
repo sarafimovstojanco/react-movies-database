@@ -63,9 +63,7 @@ function TableData(props) {
       })
       )
     },[])
-    // useEffect(() => {
-    //     setMoviesData(props.mov)
-    // }, [props.mov])
+
     var config = {
         apiKey: "apiKey",
         authDomain: "react-movies-database.firebaseapp.com",
@@ -79,31 +77,22 @@ function TableData(props) {
     if (props.loading) {
         return <Spinner/>
       }
-    // useEffect(() => {
-    //     props.setMoviesDataset(moviesData)
-    // }, [moviesData])
-
-    // moviesData.push({userId: localStorage.userId})
+   
     console.log(props.filtered)
     const onClickHandler = (index, ranked) => {
         console.log(index, ranked)
-        //props.setMovies( arr => ([...arr, arr[index].watched=true], arr.slice(0, props.movies.length)))
         props.setWatched(index, ranked)
         props.setDatabase()
 
-        // let path = localStorage.userId
-        // firebase.database().ref(path +"/").set(props.mov)
-        // if (!props.loading)
+     
     }
     const onUndoHandler= (index, ranked) => {
-        //props.setMovies( arr => ([...arr, arr[index].watched=false], arr.slice(0, props.movies.length)))
-        //let path = localStorage.userId
+      
         props.setNotWatched(index, ranked)
         props.setDatabase()
     }
 
  
- // if (!props.searching){
        return ( props.filtered.map((st, index) => {
         const { ranked, releaseDate, imdbRating, originalTitle, year, watched } = st
         if(isAuth){return (

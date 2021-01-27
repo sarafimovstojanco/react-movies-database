@@ -95,99 +95,38 @@ export default function(state = initialState, action){
             case FILTER_BY_VALUE:
             let newState = Object.assign({}, state);
             let value = action.payload.value;
-            let filteredValues = state.movies.filter(movie => {
+            let filteredMovies = state.movies.filter(movie => {
                 return movie.originalTitle.toLowerCase().includes(value) 
                 
             });
             let appliedFilters = state.appliedFilters;
             if (value) {
+                console.log(newState)
                 newState.searching = true
+                newState.filteredMoviesInit=newState.filteredMovies
                 appliedFilters = addFilterIfNotExists(FILTER_BY_VALUE, appliedFilters);
-                newState.filteredMovies = filteredValues;
+                newState.filteredMovies = filteredMovies;
                 newState.filteredCount = newState.filteredMovies.length;
                 newState.filteredPages = Math.ceil(newState.filteredCount / newState.countPerPage);
             } else {
                 newState.searching = false
                 appliedFilters = removeFilter(FILTER_BY_VALUE, appliedFilters);
                 if (appliedFilters.length === 0) {
-                    newState.filteredMovies = newState.movies;
+                    newState.filteredMovies = newState.filteredMoviesInit;
                     newState.filteredCount = newState.filteredMovies.length;
                     newState.filteredPages = Math.ceil(newState.filteredCount / newState.countPerPage);
                 }
             }
             return newState;
         case SORT_BY:
-            console.log(['sort'],action)
-            console.log(['sort'],state)
             const sortByAlphabetState = Object.assign({}, state);
             const initMovies=state.movies
-            console.log(['initmovies'], initMovies)
             let sortedAlphabetArr = action.order ?
-                sortAsc(sortByAlphabetState.filteredMovies, action.payload) :
-                sortDesc(sortByAlphabetState.filteredMovies, action.payload);
-                sortByAlphabetState.filteredMovies = sortedAlphabetArr;
-                // sortByAlphabetState.appliedFilters = addFilterIfNotExists(SORT_BY, sortByAlphabetState.appliedFilters);
-                // sortByAlphabetState.appliedFilters = removeFilter(SORT_BY, sortByAlphabetState.appliedFilters);
-                // sortByAlphabetState.currentCount=sortByAlphabetState.totalCount
-                // sortByAlphabetState.filteredPages=Math.ceil(sortByAlphabetState.currentCount /  sortByAlphabetState.countPerPage)
-                // sortByAlphabetState.totalPages=sortByAlphabetState.filteredPages
-                // let currentPageSort =sortByAlphabetState.currentPage
-                // let upperCountSort = sortByAlphabetState.countPerPage * currentPageSort
-                // let lowerCountSort = upperCountSort - sortByAlphabetState.countPerPage;
-                // let exactSort = sortByAlphabetState.movies.slice(lowerCountSort, upperCountSort);
-                // sortByAlphabetState.filteredMovies = exactSort;
-                // sortByAlphabetState.currentCount = upperCountSort;
-                sortByAlphabetState.movies=initMovies
-            console.log(sortByAlphabetState.movies)
-            console.log(sortByAlphabetState.filteredMovies)
+            sortAsc(sortByAlphabetState.filteredMovies, action.payload) :
+            sortDesc(sortByAlphabetState.filteredMovies, action.payload);
+            sortByAlphabetState.filteredMovies = sortedAlphabetArr;
+            sortByAlphabetState.movies=initMovies
             return sortByAlphabetState;  
-
-            // else {
-            //     const sortByAlphabetState = Object.assign({}, state);
-            // let sortedAlphabetArr = action.order ?
-            //     sortAsc(state.filteredMovies, action.payload) :
-            //     sortDesc(state.filteredMovies, action.payload);
-
-            //     sortByAlphabetState.filteredMovies = sortedAlphabetArr;
-            //     sortByAlphabetState.appliedFilters = addFilterIfNotExists(SORT_BY, sortByAlphabetState.appliedFilters);
-            //     sortByAlphabetState.appliedFilters = removeFilter(SORT_BY, sortByAlphabetState.appliedFilters);
-
-            // return sortByAlphabetState;  
-            //}
-        // case LOAD_NEW_PAGE:
-        //     //Clone the previous state
-        //     let loadNewPageState = Object.assign({}, state);
-        //     //How many pages should be added. Will always be 1 or -1
-        //     let addPages = action.payload.page;
-        //     //add it to the current
-        //     loadNewPageState.currentPage += addPages;
-
-        //     let perPage = loadNewPageState.countPerPage; //20 by default
-
-        //     let nextProducts;
-        //     if (addPages === 1){
-        //         //Moving from page 1 to 2 will cause ‘upperCount’ to be 40
-        //         let upperCount = loadNewPageState.currentCount + perPage;
-        //         let lowerCount = loadNewPageState.currentCount; //This hasn’t been changed. It will remain 20.
-
-        //         loadNewPageState.currentCount += loadNewPageState.countPerPage;
-        //         nextProducts = loadNewPageState.products.slice(lowerCount, upperCount);
-        //     }
-
-        //     if (addPages ===-1){
-        //         let upperCount = loadNewPageState.currentCount; //40
-        //         let lowerCount = loadNewPageState.currentCount - perPage; //20
-
-        //         loadNewPageState.currentCount -= loadNewPageState.countPerPage;
-        //         nextProducts = loadNewPageState.products.slice(lowerCount - perPage, upperCount - perPage);
-        //     }
-
-        //     loadNewPageState.filteredProducts = nextProducts;
-        //     // Don't use window.history.pushState() here in production
-        //     // It's better to keep redirections predictable
-        //     window.history.pushState({page: 1}, "title 1", `?page=${loadNewPageState.currentPage}`);
-
-        //     return loadNewPageState;
 
         case LOAD_EXACT_PAGE:
             const exactPageState = Object.assign({}, state);
@@ -266,14 +205,3 @@ function sortDesc(arr, field) {
         return 0;
     })
 }
-            //for updating only one object 
-
-            // return state.movies.map((movie, index) =>{
-            //    if (index ===action.payload){
-            //        console.log(movie)
-            //         return {
-            //             ...movie,
-            //             movie: movie.watched=true
-            //         }
-            //     }
-            // })
