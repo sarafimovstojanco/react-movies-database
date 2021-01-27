@@ -5,7 +5,64 @@ import Spinner from './Spinner/Spinner';
 
 function TableData(props) {
     let [isAuth, setIsAuth] = useState(localStorage.isAuth)
+    let checkBox = (
+      <div class="form-check">
+          <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value={props.mov}  />
+          <label class="form-check-label" for="exampleRadios1">
+          Not Watched
+          </label>
+      </div>)
     const [moviesData, setMoviesData] = useState()
+    const [tableData, setTableData] =useState(
+      props.filtered.map((st, index) => {
+        const { ranked, releaseDate, imdbRating, originalTitle, year, watched } = st
+        if(isAuth){return (
+            <tr key={releaseDate}>
+                <td >{ranked}</td>
+                <td>{imdbRating}</td>
+                <td>{originalTitle}</td>
+                <td>{year}</td>
+                <td>{watched ? <a onClick={() => onUndoHandler(index, ranked)}> ✔️ Watched </a> : <a onClick={() => onClickHandler(index, ranked)}>{checkBox}</a>}</td>
+            </tr>
+            
+            )}
+        else return (
+            <tr key={releaseDate}>
+                <td >{index + 1 }</td>
+                <td>{imdbRating}</td>
+                <td>{originalTitle}</td>
+                <td>{year}</td>
+            </tr>
+            )
+    })
+    )
+ 
+    
+    useEffect(() => {
+      setTableData(
+        props.filtered.map((st, index) => {
+          const { ranked, releaseDate, imdbRating, originalTitle, year, watched } = st
+          if(isAuth){return (
+              <tr key={releaseDate}>
+                  <td >{ranked}</td>
+                  <td>{imdbRating}</td>
+                  <td>{originalTitle}</td>
+                  <td>{year}</td>
+                  <td>{watched ? <a onClick={() => onUndoHandler(index, ranked)}> ✔️ Watched </a> : <a onClick={() => onClickHandler(index, ranked)}>{checkBox}</a>}</td>
+              </tr>
+              
+              )}
+          else return (
+              <tr key={releaseDate}>
+                  <td >{index + 1 }</td>
+                  <td>{imdbRating}</td>
+                  <td>{originalTitle}</td>
+                  <td>{year}</td>
+              </tr>
+              )
+      })
+      )
+    },[])
     // useEffect(() => {
     //     setMoviesData(props.mov)
     // }, [props.mov])
@@ -27,8 +84,9 @@ function TableData(props) {
     // }, [moviesData])
 
     // moviesData.push({userId: localStorage.userId})
-
+    console.log(props.filtered)
     const onClickHandler = (index, ranked) => {
+        console.log(index, ranked)
         //props.setMovies( arr => ([...arr, arr[index].watched=true], arr.slice(0, props.movies.length)))
         props.setWatched(index, ranked)
         props.setDatabase()
@@ -44,16 +102,9 @@ function TableData(props) {
         props.setDatabase()
     }
 
-    let checkBox = (
-    <div class="form-check">
-        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value={props.mov}  />
-        <label class="form-check-label" for="exampleRadios1">
-        Not Watched
-        </label>
-    </div>
-  )
-  if (!props.searching){
-    return props.mov.slice(props.indexOfFirstPost, props.indexOfLastPost).map((st, index) => {
+ 
+ // if (!props.searching){
+       return ( props.filtered.map((st, index) => {
         const { ranked, releaseDate, imdbRating, originalTitle, year, watched } = st
         if(isAuth){return (
             <tr key={releaseDate}>
@@ -74,30 +125,31 @@ function TableData(props) {
             </tr>
             )
     })
+    )
     }
-  else {
-    return props.filtered.map((st, index) => {
-        const { ranked, releaseDate, imdbRating, originalTitle, year, watched } = st
-        if(isAuth){return (
-            <tr key={releaseDate}>
-                <td >{ranked}</td>
-                <td>{imdbRating}</td>
-                <td>{originalTitle}</td>
-                <td>{year}</td>
-                <td>{watched ? <a onClick={() => onUndoHandler(index, ranked)}> ✔️ Watched </a> : <a onClick={() => onClickHandler(index, ranked)}>{checkBox}</a>}</td>
-            </tr>
+ // else {
+//     return props.filtered.map((st, index) => {
+//         const { ranked, releaseDate, imdbRating, originalTitle, year, watched } = st
+//         if(isAuth){return (
+//             <tr key={releaseDate}>
+//                 <td >{ranked}</td>
+//                 <td>{imdbRating}</td>
+//                 <td>{originalTitle}</td>
+//                 <td>{year}</td>
+//                 <td>{watched ? <a onClick={() => onUndoHandler(index, ranked)}> ✔️ Watched </a> : <a onClick={() => onClickHandler(index, ranked)}>{checkBox}</a>}</td>
+//             </tr>
             
-            )}
+//             )}
      
-    })
-  }
-}
-
+//     })
+//   }
+// }
 const mapStateToProps  = (state) => (
         {mov: state.movies,
         loading: state.loading,
         filtered: state.filteredMovies,
-        searching: state.searching
+        searching: state.searching,
+        state: state
         })
 
 const mapDispatchToProps = dispatch => {

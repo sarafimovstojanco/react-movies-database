@@ -1,6 +1,7 @@
 import {GET_MOVIES, WATCHED, NOT_WATCHED, FILTER_BY_VALUE, DATABASE_SET, SORT_BY, LOAD_DATA, LOAD_EXACT_PAGE, MOVIES_PER_PAGE} from './types'
 import firebase from 'firebase';
 import update from 'immutability-helper'
+import { act } from 'react-dom/test-utils';
 
 var config = {
     apiKey: "apiKey",
@@ -16,6 +17,8 @@ if (firebase.apps.length === 0) {
 
 const initialState = {
     movies:[],
+    filteredMovies:[],
+    filteredMoviesInit:[],
     searching: false,
     currentPage: 1,
     countPerPage: '',
@@ -27,76 +30,64 @@ const initialState = {
 export default function(state = initialState, action){
     switch(action.type){
         case GET_MOVIES:
-            let count = action.payload.count;
-            let countPerPage = action.payload.countPerPage || 10.
-            let totalPages = Math.ceil(count / countPerPage);
-            let movies=action.payload.data
-        return {
-            ...state,
-            movies,
-            firstName: action.payload.firstName,
-            filteredMovies: movies.slice(0, countPerPage),
-            currentCount: countPerPage,
-            countPerPage,
-            totalCount: count,
-            currentPage: 1,
-            totalPages: totalPages,
-            filteredPages: totalPages,
-            loading:false,
-        }
+            let getState= Object.assign({}, state)
+            getState.movies=action.payload.data
+            getState.loading=false
+            getState.firstName= action.payload.firstName
+            getState.countPerPage=action.payload.countPerPage || 10
+            getState.currentCount= getState.countPerPage
+            getState.totalCount= action.payload.count
+            getState.currentPage= 1
+            getState.totalPages= Math.ceil(getState.totalCount / getState.countPerPage)
+            getState.filteredPages= Math.ceil(getState.totalCount / getState.countPerPage)
+            getState.upperCount = getState.countPerPage * getState.currentPage
+            getState.lowerCount=getState.upperCount-getState.countPerPage
+            getState.filteredMovies=getState.movies.slice(getState.lowerCount, getState.upperCount)
+       
+            console.log(getState)
+        return getState
+        // case WATCHED:
+        //     console.log(action)
+        //     let watched = Object.assign({}, state);
+
+        // return watched
         case WATCHED:
-            if(!state.searching){
-                return update(state, {
-                    movies:{
-                      [action.payload]:{
-                          watched: {$set: true}
-                      }
-                    },
-                 loading: {$set: false}
-                 }
-                 )
-            }
-         else if (state.searching && (state.movies.ranked === state.filteredMovies.ranked)){
-            return update(state, {
-                movies:{
-                  [action.ranked -1]:{
-                      watched: {$set: true}
-                  }
-                },
-                filteredMovies: {
-                    [action.payload]:{
-                        watched: {$set: true}
-                    }
-                  }
-             })
-            }
+            console.log(action)
+            console.log(state)
+            let watched = Object.assign({}, state);
+            watched.filteredMovies[action.payload].watched=true
+                for (let i; i<122; i++){
+                    if(watched.movies[i].ranked === action.ranked)
+                    return watched.movies.watched=true
+                }
+            console.log(watched.movies)
+            
+            return watched
+            // return update(state, {
+            //     movies:{
+            //       [action.ranked -1]:{
+            //           watched: {$set: true}
+            //       }
+            //     },
+            //     filteredMovies: {
+            //         [action.payload]:{
+            //             watched: {$set: true}
+            //         }
+            //       }
+            //  })
         case NOT_WATCHED:
-            if(!state.searching){
-                return update(state, {
-                    movies:{
-                      [action.payload]:{
-                          watched: {$set: false}
-                      }
-                    },
-                 loading: {$set: false}
-                 }
-                 )
-            }
-         else if (state.searching && (state.movies.ranked === state.filteredMovies.ranked)){
-            return update(state, {
-                movies:{
-                  [action.ranked -1]:{
-                      watched: {$set: false}
-                  }
-                },
-                filteredMovies: {
-                    [action.payload]:{
-                        watched: {$set: false}
-                    }
-                  }
-             })
-            }
+            console.log(action)
+            let notWatched = Object.assign({}, state);
+            notWatched.filteredMovies[action.payload].watched=false
+                for (let i; i<122; i++){
+                    if(notWatched.movies[i].ranked === action.ranked)
+                    return notWatched.movies.watched=false
+                }
+            console.log(notWatched.movies)
+            
+            return notWatched
             case DATABASE_SET:
+                console.log(state)
                databaseSet(state.movies)
             return {
                 ...state,
@@ -126,41 +117,43 @@ export default function(state = initialState, action){
             }
             return newState;
         case SORT_BY:
-            if(!state.searching){
-            console.log(action)
+            console.log(['sort'],action)
+            console.log(['sort'],state)
             const sortByAlphabetState = Object.assign({}, state);
+            const initMovies=state.movies
+            console.log(['initmovies'], initMovies)
             let sortedAlphabetArr = action.order ?
-                sortAsc(state.movies, action.payload) :
-                sortDesc(state.movies, action.payload);
+                sortAsc(sortByAlphabetState.filteredMovies, action.payload) :
+                sortDesc(sortByAlphabetState.filteredMovies, action.payload);
                 sortByAlphabetState.filteredMovies = sortedAlphabetArr;
-                sortByAlphabetState.appliedFilters = addFilterIfNotExists(SORT_BY, sortByAlphabetState.appliedFilters);
-                sortByAlphabetState.appliedFilters = removeFilter(SORT_BY, sortByAlphabetState.appliedFilters);
-                sortByAlphabetState.currentPage=1
-                sortByAlphabetState.currentCount=sortByAlphabetState.totalCount
-                sortByAlphabetState.filteredPages=Math.ceil(sortByAlphabetState.currentCount /  sortByAlphabetState.countPerPage)
-                sortByAlphabetState.totalPages=sortByAlphabetState.filteredPages
-                let currentPageSort =sortByAlphabetState.currentPage
-                let upperCountSort = sortByAlphabetState.countPerPage * currentPageSort
-                let lowerCountSort = upperCountSort - sortByAlphabetState.countPerPage;
-                let exactSort = sortByAlphabetState.movies.slice(lowerCountSort, upperCountSort);
-                sortByAlphabetState.filteredMovies = exactSort;
-                sortByAlphabetState.currentCount = upperCountSort;
-                sortByAlphabetState.currentPage = exactSort;
-            console.log(sortByAlphabetState)
+                // sortByAlphabetState.appliedFilters = addFilterIfNotExists(SORT_BY, sortByAlphabetState.appliedFilters);
+                // sortByAlphabetState.appliedFilters = removeFilter(SORT_BY, sortByAlphabetState.appliedFilters);
+                // sortByAlphabetState.currentCount=sortByAlphabetState.totalCount
+                // sortByAlphabetState.filteredPages=Math.ceil(sortByAlphabetState.currentCount /  sortByAlphabetState.countPerPage)
+                // sortByAlphabetState.totalPages=sortByAlphabetState.filteredPages
+                // let currentPageSort =sortByAlphabetState.currentPage
+                // let upperCountSort = sortByAlphabetState.countPerPage * currentPageSort
+                // let lowerCountSort = upperCountSort - sortByAlphabetState.countPerPage;
+                // let exactSort = sortByAlphabetState.movies.slice(lowerCountSort, upperCountSort);
+                // sortByAlphabetState.filteredMovies = exactSort;
+                // sortByAlphabetState.currentCount = upperCountSort;
+                sortByAlphabetState.movies=initMovies
+            console.log(sortByAlphabetState.movies)
+            console.log(sortByAlphabetState.filteredMovies)
             return sortByAlphabetState;  
-            }
-            else {
-                const sortByAlphabetState = Object.assign({}, state);
-            let sortedAlphabetArr = action.order ?
-                sortAsc(state.filteredMovies, action.payload) :
-                sortDesc(state.filteredMovies, action.payload);
 
-                sortByAlphabetState.filteredMovies = sortedAlphabetArr;
-                sortByAlphabetState.appliedFilters = addFilterIfNotExists(SORT_BY, sortByAlphabetState.appliedFilters);
-                sortByAlphabetState.appliedFilters = removeFilter(SORT_BY, sortByAlphabetState.appliedFilters);
+            // else {
+            //     const sortByAlphabetState = Object.assign({}, state);
+            // let sortedAlphabetArr = action.order ?
+            //     sortAsc(state.filteredMovies, action.payload) :
+            //     sortDesc(state.filteredMovies, action.payload);
 
-            return sortByAlphabetState;  
-            }
+            //     sortByAlphabetState.filteredMovies = sortedAlphabetArr;
+            //     sortByAlphabetState.appliedFilters = addFilterIfNotExists(SORT_BY, sortByAlphabetState.appliedFilters);
+            //     sortByAlphabetState.appliedFilters = removeFilter(SORT_BY, sortByAlphabetState.appliedFilters);
+
+            // return sortByAlphabetState;  
+            //}
         // case LOAD_NEW_PAGE:
         //     //Clone the previous state
         //     let loadNewPageState = Object.assign({}, state);
@@ -198,6 +191,7 @@ export default function(state = initialState, action){
 
         case LOAD_EXACT_PAGE:
             const exactPageState = Object.assign({}, state);
+            const initMoviesLoad = exactPageState.movies
             const exactPage = action.payload;
             let upperCountExact = exactPageState.countPerPage * exactPage
             let lowerCountExact = upperCountExact - exactPageState.countPerPage;
@@ -205,12 +199,15 @@ export default function(state = initialState, action){
             exactPageState.filteredMovies = exactMovies;
             exactPageState.currentCount = upperCountExact;
             exactPageState.currentPage = exactPage;
+            console.log(exactPageState)
             window.history.pushState({page: 1}, "title 1", `?page=${exactPageState.currentPage}`);
+            exactPageState.movies=initMoviesLoad
             return exactPageState;
 
         case MOVIES_PER_PAGE:
 
             const moviesPerPageState = Object.assign({}, state)
+            const initMoviesMPP = moviesPerPageState.movies
             moviesPerPageState.currentPage=1
             moviesPerPageState.countPerPage=action.payload
             moviesPerPageState.currentCount=moviesPerPageState.totalCount
@@ -222,7 +219,9 @@ export default function(state = initialState, action){
             let exactMPP = moviesPerPageState.movies.slice(lowerCountMPP, upperCountMPP);
             moviesPerPageState.filteredMovies = exactMPP;
             moviesPerPageState.currentCount = upperCountMPP;
-            moviesPerPageState.currentPage = exactMPP;
+            moviesPerPageState.movies=initMoviesMPP
+            console.log(moviesPerPageState)
+
             return moviesPerPageState
 
         default: return state

@@ -55,46 +55,9 @@ const Table = (props) => {
   if (props.loading) {
     return <Spinner/>
   }
-    // const onHeaderClick = headerName => {
-    //   props.setMovies(sort(headerName))
-    // }
-  
-    // const sort = param => {
-    //   if(ascending){
-    //     setAscending(false)
-    //     return [].concat(props.movies)
-    //     .sort((a, b) => a[param] < b[param] ? 1 : -1)
-    //     .map((item, i) => 
-    //         item
-    //     );
-    //   }
-    //   else {
-    //     setAscending(true)
-    //     return [].concat(props.movies)
-    //     .sort((a, b) => a[param] > b[param] ? 1 : -1)
-    //     .map((item, i) => 
-    //         item
-    //     );
-    //   }
-    // }
-    
     const indexOfLastPost = props.currentCount
-    console.log(['moviesData'], props.currentPage)
-    console.log(['moviesData'], indexOfLastPost)
-
     const indexOfFirstPost = indexOfLastPost - props.countPerPage
-    console.log(['moviesData'], props.countPerPage)
-    console.log(['moviesData'], props.currentCount)
 
-    //const currentPosts = moviesData.slice(indexOfFirstPost, indexOfLastPost)
-    // console.log(['moviesData'], indexOfLastPost)
-    // console.log(['moviesData'], indexOfFirstPost)
-    // console.log(['moviesData'], currentPosts)
-    // const paginate = pageNumber => 
-    // {
-      //setCurrentPage(pageNumber)
-      //setcurr(postsPerPage)
-    //}
     return (     
         <div class='Wrapper'>
         {loading ? <Spinner /> : null} 
@@ -119,7 +82,6 @@ const Table = (props) => {
           movies={moviesData}
           postsPerPage={postsPerPage}
           totalPosts={moviesData.length}
-          //paginate={paginate}
           />
           <PerPageSelector 
           postsPerPage={postsPerPage}
