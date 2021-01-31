@@ -11,7 +11,6 @@ import {Provider} from 'react-redux'
 import Auth from './Auth';
 
 console.warn = console.error = () => {};
-
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(reducer, composeEnhancers(

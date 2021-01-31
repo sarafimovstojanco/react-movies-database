@@ -24,15 +24,8 @@ const load = _ => {
   
 return (
   <div>
-    <Navigation 
-    isAuth={isAuth}
-    setIsAuth={setIsAuth}
-    />
-    <SignInCard 
-    movies={authMovies}
-    isAuth={isAuth}
-    setIsAuth={setIsAuth}
-    />
+    <Navigation/>
+    <SignInCard/>
    </div>
 )}
 

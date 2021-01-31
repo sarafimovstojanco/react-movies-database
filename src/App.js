@@ -18,7 +18,7 @@ const App = _ => {
   return <>
         {loading ? <Spinner /> : <>
           <Navigation/>
-          <Table />
+          <Table/>
         </>}
       </>
 }

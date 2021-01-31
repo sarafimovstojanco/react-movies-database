@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button';
 import './SignInCard.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import firebase from 'firebase';
+import {config} from './firebase/config'
 
 const SignInCard = (props) => {
 
@@ -68,12 +69,6 @@ const validatePassword = (password) => {
 }
 }
 
- var config = {
-  apiKey: "apiKey",
-  authDomain: "react-movies-database.firebaseapp.com",
-  databaseURL: "https://react-movies-database-default-rtdb.firebaseio.com/",
-  storageBucket: "bucket.appspot.com"
-};
 if (firebase.apps.length === 0) {
   firebase.initializeApp(config);
 }

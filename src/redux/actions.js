@@ -1,4 +1,4 @@
-import {GET_MOVIES, NOT_WATCHED, WATCHED, USERS_ERROR, FILTER_BY_VALUE, LOAD_DATA, LOAD_EXACT_PAGE, LOAD_NEW_PAGE, SORT_BY, MOVIES_PER_PAGE} from './types'
+import {GET_MOVIES, NOT_WATCHED, WATCHED, USERS_ERROR, FILTER_BY_VALUE, LOAD_DATA, LOAD_EXACT_PAGE, LOAD_NEW_PAGE, SORT_BY, MOVIES_PER_PAGE, DATABASE_SET} from './types'
 import axios from 'axios'
 
 export const getMovies = () => async dispatch => {
@@ -14,10 +14,7 @@ export const getMovies = () => async dispatch => {
             count: 122,
             countPerPage: 10}
         })
-        // dispatch({
-        //     type: FINISH_LOADING,
-        //     payload: false
-        // })
+      
         localStorage.setItem('firstName', response.data[122])
          }
         )
@@ -43,21 +40,15 @@ catch(e){
 export const setWatched = (index, ranked) => {
     return dispatch =>dispatch({
       type: WATCHED,
-      payload:{
-        index,
-        ranked
-      } 
+      payload: index,
+      ranked: ranked
 })
 }
 
-export const setNotWatched = (index, ranked) => {
+export const setDatabase = () =>{
     return dispatch => dispatch({
-      type: NOT_WATCHED,
-      payload:{
-        index,
-        ranked
-      } 
-})
+        type: DATABASE_SET
+    })
 }
 
 export const filterByValue = payload => ({
@@ -68,10 +59,8 @@ export const filterByValue = payload => ({
 export const sortBy = (item, order) => {
      return dispatch => dispatch({
          type: SORT_BY,
-         payload: {
-             item,
-             order
-         },
+         item: item,
+         order: order
         })
     }
 

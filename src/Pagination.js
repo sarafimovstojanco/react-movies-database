@@ -1,38 +1,37 @@
-import React, { useState } from 'react'
-import {connect} from 'react-redux'
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { loadExactPage } from './redux/actions'
 import "bulma/css/bulma.min.css"
 
-const Pagination = (props) => {
+const Pagination = () => {
+    const dispatch = useDispatch()
+    const currentPage = useSelector(state => state.currentPage)
+    const totalPages = useSelector(state => state.totalPages)
+    const searching = useSelector(state =>state.searching)
     const pageNumbers = [];
-    const [activePage, setActivePage] = useState(1)
-
-    // const onPageClick = number => {
-    //     props.paginate(number)
-    //     setActivePage(number)
-    // }
-
+    
     const isActive = number => {
-        if (number === activePage) {
+        if (number === currentPage) {
             return 'active'
         }
     }
 
-    for (let i=1; i<= props.totalPages; i++ ) {
+    for (let i=1; i<= totalPages; i++ ) {
         pageNumbers.push(i)
     }
     return (
-        <nav>
+        !searching ? <nav>
             <ul className='pagination'>
                 {pageNumbers.map((number, index) => (
                     <li key={number} className={'page-item ' + isActive(number)}>
                         <button 
                         className={`button pagination-link ${
-                            props.currentPage === index + 1
+                            currentPage === index + 1
                               ? "is-current"
                               : ""
                           }`}
                           aria-label="Page 1"
-                          onClick={() => props.loadExactPage(index + 1)}
+                          onClick={() => dispatch(loadExactPage(index + 1))}
                           aria-current="page"
                         >
                           {index + 1}
@@ -40,30 +39,8 @@ const Pagination = (props) => {
                     </li>
                 ))}
             </ul>
-        </nav>
+        </nav> : null
     )
 }
 
-const mapStateToProps = state => {
-    return {
-        countPerPage: state.countPerPage,
-        currentCount: state.currentCount,
-        currentPage: state.currentPage,
-        filteredPages: state.filteredPages,
-        totalCount: state.totalCount,
-        totalPages: state.totalPages,
-    }
-}
-
-const mapDispatchToProps = dispatch =>{
-    return {
-        loadExactPage: (index) => 
-        {console.log(index)
-            dispatch({
-                type: "LOAD_EXACT_PAGE",
-                payload: index
-            })    
-    }}
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Pagination);
+export default Pagination
