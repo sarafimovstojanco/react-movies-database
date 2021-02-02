@@ -1,4 +1,4 @@
-import {GET_MOVIES, NOT_WATCHED, WATCHED, USERS_ERROR, FILTER_BY_VALUE, LOAD_DATA, LOAD_EXACT_PAGE, LOAD_NEW_PAGE, SORT_BY, MOVIES_PER_PAGE, DATABASE_SET} from './types'
+import {GET_MOVIES, WATCHED, USERS_ERROR, FILTER_BY_VALUE, LOAD_EXACT_PAGE, SORT_BY, MOVIES_PER_PAGE, DATABASE_SET, SET_FIRST_NAME} from './types'
 import axios from 'axios'
 
 export const getMovies = () => async dispatch => {
@@ -9,15 +9,11 @@ export const getMovies = () => async dispatch => {
             dispatch({
             type: GET_MOVIES,
             payload: {
-            data: response.data.slice(0,122),
-            firstName: response.data[122],
-            count: 122,
+            data: response.data,
+            count: response.data.length,
             countPerPage: 10}
         })
-      
-        localStorage.setItem('firstName', response.data[122])
-         }
-        )
+    })
         
     }
     else {
@@ -26,7 +22,7 @@ export const getMovies = () => async dispatch => {
                 type: GET_MOVIES,
                 payload: {
                     data: response.data,
-                    count: 122,
+                    count: response.data.length,
                     countPerPage: 10}
             })
         })
@@ -37,6 +33,8 @@ catch(e){
         payload: console.log(e),
     })
 }}
+
+
 export const setWatched = (index, ranked) => {
     return dispatch =>dispatch({
       type: WATCHED,
@@ -64,19 +62,8 @@ export const sortBy = (item, order) => {
         })
     }
 
-export const loadData = payload => ({
-type: LOAD_DATA,
-payload
-});
-
-export const loadNewPage = payload => ({
-type: LOAD_NEW_PAGE,
-payload
-});
-
 export const loadExactPage = pgNumber => {
     return dispatch => {
-        console.log(pgNumber)
         dispatch({
         type: LOAD_EXACT_PAGE,
         payload: pgNumber
@@ -90,14 +77,11 @@ export const setPerPage = payload => {
     })
 }
 
-
-// sortByInput(e){
-//     let value = e.target.value;
-//     let direction = value.endsWith('asc') ? "asc" : "desc";
-
-//     if (value.startsWith('price')){
-//         this.props.dispatch(sortByPrice({direction}))
-//     }else {
-//         this.props.dispatch(sortByAlphabet({direction}));
-//     }
-// }
+export const setFirstName = firstName => {
+    return dispatch =>{
+        dispatch({
+            type: SET_FIRST_NAME,
+            payload: firstName
+        })
+    }
+}

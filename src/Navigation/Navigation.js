@@ -2,7 +2,8 @@ import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { filterByValue } from './redux/actions'
+import { filterByValue } from '../redux/actions'
+import firebase from 'firebase';
 
 
 const Navigation = () => {
@@ -15,7 +16,7 @@ const Navigation = () => {
     dispatch(filterByValue({ value: input }))
   }
 
-  let searchBar = localStorage.isAuth ? (
+  let searchBar = 
     <form class="form-inline">
       <input
         class="form-control mr-sm-2"
@@ -24,17 +25,17 @@ const Navigation = () => {
         placeholder="Search Title..."
         onChange={(e) => filterByInput(e)}
       />
-    </form>) : null
+    </form>
 
   const onLoginHandler = () => {
     history.push('/auth')
   }
 
   const onLogoutHandler = () => {
-    localStorage.removeItem('expirationDate')
+    firebase.auth().signOut()
     localStorage.removeItem('userId')
-    localStorage.removeItem('token')
     localStorage.removeItem('isAuth')
+    localStorage.removeItem('firstName')
     history.push('/auth')
   }
 
@@ -58,7 +59,7 @@ const Navigation = () => {
 
   return (
     <nav class="navbar sticky-top navbar-expand navbar-light bg-light">
-      <a class="navbar-brand" href="/">{localStorage.isAuth ? 'Hi ' + firstName : 'RMD'}</a>
+      <a class="navbar-brand" href="/">{localStorage.isAuth ? 'Hi ' + localStorage.firstName : 'RMD'}</a>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
@@ -66,7 +67,7 @@ const Navigation = () => {
           </li>
         </ul>
         <form class="form-inline my-2">
-          {localStorage.isAuth ? searchBar : null}
+          {searchBar}
           {localStorage.isAuth ? logoutButton : loginButton}
         </form>
       </div>

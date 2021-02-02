@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useDispatch } from 'react-redux'
-import { sortBy } from './redux/actions'
+import { sortBy } from '../redux/actions'
 
 const TableHeader = () => {
    const dispatch = useDispatch()

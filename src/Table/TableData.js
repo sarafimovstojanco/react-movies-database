@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import { setWatched, setDatabase } from './redux/actions'
+import { setWatched, setDatabase } from '../redux/actions'
 
 const TableData = () => {
  
@@ -20,7 +20,7 @@ const TableData = () => {
     dispatch(setWatched(index, ranked))
     dispatch(setDatabase())
   }
- 
+ console.log(state)
   return (
     filtered.map((st, index) => {
       const { ranked, releaseDate, imdbRating, originalTitle, year, watched } = st

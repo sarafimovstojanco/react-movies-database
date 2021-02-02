@@ -1,8 +1,6 @@
-import { GET_MOVIES, WATCHED, NOT_WATCHED, FILTER_BY_VALUE, DATABASE_SET, SORT_BY, LOAD_EXACT_PAGE, MOVIES_PER_PAGE } from './types'
+import { GET_MOVIES, WATCHED, FILTER_BY_VALUE, DATABASE_SET, SORT_BY, LOAD_EXACT_PAGE, MOVIES_PER_PAGE, SET_FIRST_NAME } from './types'
 import firebase from 'firebase';
 import { config } from '../firebase/config'
-
-let path = localStorage.userId
 
 if (firebase.apps.length === 0) {
     firebase.initializeApp(config);
@@ -24,7 +22,7 @@ export default function (state = initialState, action) {
     switch (action.type) {
         case GET_MOVIES:
             let getState = Object.assign({}, state)
-            getState.movies = action.payload.data
+            getState.movies = action.payload.data.slice(0, action.payload.data.length).map((obj, index)=> ({ ...obj, ranked: index+1 }))
             getState.loading = false
             getState.firstName = action.payload.firstName
             getState.countPerPage = action.payload.countPerPage || 10
@@ -36,6 +34,7 @@ export default function (state = initialState, action) {
             getState.upperCount = getState.countPerPage * getState.currentPage
             getState.lowerCount = getState.upperCount - getState.countPerPage
             getState.filteredMovies = getState.movies.slice(getState.lowerCount, getState.upperCount)
+            console.log(action.payload)
 
             return getState
 
@@ -73,7 +72,6 @@ export default function (state = initialState, action) {
                     newState.filteredPages = Math.ceil(newState.filteredCount / newState.countPerPage);
                 }
             }
-            console.log(newState)
             return newState;
 
         case SORT_BY:
@@ -82,8 +80,6 @@ export default function (state = initialState, action) {
                 sortAsc(sortByAlphabetState.filteredMovies, action.item) :
                 sortDesc(sortByAlphabetState.filteredMovies, action.item);
             sortByAlphabetState.filteredMovies = sortedAlphabetArr;
-            console.log(action.payload)
-            console.log(sortByAlphabetState)
             return sortByAlphabetState;
 
         case LOAD_EXACT_PAGE:
@@ -119,11 +115,18 @@ export default function (state = initialState, action) {
 
             return moviesPerPageState
 
+        case SET_FIRST_NAME:
+            const firstNameState = Object.assign({}, state)
+            firstNameState.firstName = action.payload
+            console.log(firstNameState)
+            return firstNameState
+
         case DATABASE_SET:
             databaseSet(state.movies)
             return {
                 ...state,
             }
+       
 
         default: return state
     }
@@ -143,7 +146,7 @@ function removeFilter(filter, appliedFilters) {
 }
 
 function databaseSet(movies) {
-    return firebase.database().ref(path + "/").update(movies)
+    return firebase.database().ref(localStorage.userId + "/").update(movies)
 }
 
 function sortAsc(arr, field) {

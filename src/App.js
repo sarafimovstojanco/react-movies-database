@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Spinner from './Spinner/Spinner'
-import Table from './Table';
-import Navigation from './Navigation'
+import Table from './Table/Table';
+import Navigation from './Navigation/Navigation';
 import { getMovies } from './redux/actions'
 import './App.css';
 

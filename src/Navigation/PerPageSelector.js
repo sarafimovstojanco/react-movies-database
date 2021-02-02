@@ -1,6 +1,7 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { setPerPage } from './redux/actions'
+import { setPerPage } from '../redux/actions'
+import "bulma/css/bulma.min.css"
 
 const PerPageSelector = () => {
   const countPerPage = useSelector(state => state.countPerPage)
@@ -11,6 +12,7 @@ const PerPageSelector = () => {
 
   if(!searching){
     return (
+      <div class="select mt-2 is-small">
       <select value={countPerPage} onChange={event => dispatch(setPerPage(event.target.value))} >
           {
             [10, 25, 50, 100, totalCount].map(pageSize => (
@@ -20,6 +22,7 @@ const PerPageSelector = () => {
             ))
           }
         </select>
+      </div>
       )
       }
       else {

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { loadExactPage } from './redux/actions'
+import { loadExactPage } from '../redux/actions'
 import "bulma/css/bulma.min.css"
 
 const Pagination = () => {
@@ -21,7 +21,7 @@ const Pagination = () => {
     }
     return (
         !searching ? <nav>
-            <ul className='pagination'>
+            <ul className='pagination is-small'>
                 {pageNumbers.map((number, index) => (
                     <li key={number} className={'page-item ' + isActive(number)}>
                         <button 

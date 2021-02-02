@@ -10,6 +10,7 @@ export const LOAD_DATA = 'LOAD_DATA'
 export const LOAD_NEW_PAGE = 'LOAD_NEW_PAGE'
 export const LOAD_EXACT_PAGE = 'LOAD_EXACT_PAGE'
 export const MOVIES_PER_PAGE = 'MOVIES_PER_PAGE'
+export const SET_FIRST_NAME = 'SET_FIRST_NAME'
 
 
 //export const FINISH_LOADING = 'FINISH_LOADING'

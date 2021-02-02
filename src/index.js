@@ -8,11 +8,10 @@ import App from './App';
 import reducer from './redux/reducer';
 import 'bootstrap/dist/css/bootstrap.css';
 import {Provider} from 'react-redux'
-import Auth from './Auth';
+import Auth from './SignIn/Auth';
 
 console.warn = console.error = () => {};
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
 const store = createStore(reducer, composeEnhancers(
   applyMiddleware(thunk)
 ))
