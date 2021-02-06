@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import { setWatched, setDatabase } from '../redux/actions'
+import { setWatched, setDatabase, removeMovie } from '../redux/actions'
 
 const TableData = () => {
  
@@ -20,7 +20,12 @@ const TableData = () => {
     dispatch(setWatched(index, ranked))
     dispatch(setDatabase())
   }
- console.log(state)
+
+  const removeMovieFunction = (index, ranked) => {
+    dispatch(removeMovie(index, ranked))
+    dispatch(setDatabase())
+  }
+
   return (
     filtered.map((st, index) => {
       const { ranked, releaseDate, imdbRating, originalTitle, year, watched } = st
@@ -32,6 +37,7 @@ const TableData = () => {
             <td>{originalTitle}</td>
             <td>{year}</td>
             <td>{watched ? <a onClick={() => onClickHandler(index, ranked)}> ✔️ Watched </a> : <a onClick={() => onClickHandler(index, ranked)}>{checkBox}</a>}</td>
+            <td><button class="delete" onClick={() => removeMovieFunction(index, ranked)}></button></td>
           </tr>
   
         )

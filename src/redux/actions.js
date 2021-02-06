@@ -1,4 +1,4 @@
-import {GET_MOVIES, WATCHED, USERS_ERROR, FILTER_BY_VALUE, LOAD_EXACT_PAGE, SORT_BY, MOVIES_PER_PAGE, DATABASE_SET, SET_FIRST_NAME, SET_NEW_MOVIE } from './types'
+import {GET_MOVIES, WATCHED, USERS_ERROR, FILTER_BY_VALUE, LOAD_EXACT_PAGE, SORT_BY, MOVIES_PER_PAGE, DATABASE_SET, SET_FIRST_NAME, SET_NEW_MOVIE, REMOVE_MOVIE } from './types'
 import axios from 'axios'
 
 export const getMovies = () => async dispatch => {
@@ -94,3 +94,14 @@ export const newMovieAddition = newMovie => {
         })
     }
 }
+
+export const removeMovie = (index, ranked) => {
+    return dispatch => {
+        dispatch({
+            type: REMOVE_MOVIE,
+            index: index,
+            ranked: ranked
+        })
+    }
+}
+

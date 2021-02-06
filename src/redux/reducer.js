@@ -1,5 +1,6 @@
-import { GET_MOVIES, WATCHED, FILTER_BY_VALUE, DATABASE_SET, SORT_BY, LOAD_EXACT_PAGE, MOVIES_PER_PAGE, SET_FIRST_NAME, SET_NEW_MOVIE } from './types'
+import { GET_MOVIES, WATCHED, FILTER_BY_VALUE, DATABASE_SET, SORT_BY, LOAD_EXACT_PAGE, MOVIES_PER_PAGE, SET_FIRST_NAME, SET_NEW_MOVIE, REMOVE_MOVIE } from './types'
 import firebase from 'firebase';
+import { act } from 'react-dom/test-utils';
 
 const initialState = {
     movies: [],
@@ -46,11 +47,11 @@ export default function (state = initialState, action) {
         case FILTER_BY_VALUE:
             let newState = Object.assign({}, state);
             let value = action.payload.value;
+            console.log(value)
             let filteredMovies = newState.movies.filter(movie => {
-                return movie.originalTitle.includes(value)
+                return movie.originalTitle.toLowerCase().includes(value)
 
             });
-            console.log(filteredMovies)
             let appliedFilters = state.appliedFilters;
             if (value) {
                 newState.searching = true
@@ -63,7 +64,7 @@ export default function (state = initialState, action) {
                 newState.searching = false
                 appliedFilters = removeFilter(FILTER_BY_VALUE, appliedFilters);
                 if (appliedFilters.length === 0) {
-                    newState.filteredMovies = newState.filteredMoviesInit;
+                    newState.filteredMovies = newState.movies.slice(newState.lowerCount, newState.upperCount);
                     newState.filteredCount = newState.filteredMovies.length;
                     newState.filteredPages = Math.ceil(newState.filteredCount / newState.countPerPage);
                 }
@@ -88,6 +89,7 @@ export default function (state = initialState, action) {
             exactPageState.filteredMovies = exactMovies;
             exactPageState.currentCount = upperCountExact;
             exactPageState.currentPage = exactPage;
+            exactPageState.searching = false;
             window.history.pushState({ page: 1 }, "title 1", `?page=${exactPageState.currentPage}`);
             exactPageState.movies = initMoviesLoad
 
@@ -107,6 +109,8 @@ export default function (state = initialState, action) {
             let exactMPP = moviesPerPageState.movies.slice(lowerCountMPP, upperCountMPP);
             moviesPerPageState.filteredMovies = exactMPP;
             moviesPerPageState.currentCount = upperCountMPP;
+            moviesPerPageState.lowerCount = lowerCountMPP;
+            moviesPerPageState.upperCount = upperCountMPP;
             moviesPerPageState.movies = initMoviesMPP
 
             return moviesPerPageState
@@ -127,14 +131,27 @@ export default function (state = initialState, action) {
             const newMovieState = Object.assign({}, state)
             console.log(action.payload)
             console.log(newMovieState.filteredMovies)
-            let newFiltered = newMovieState.filteredMovies
+            //let newFiltered = newMovieState.filteredMovies
             let newMovies = newMovieState.movies
-            newFiltered.unshift(action.payload)
+            //newFiltered.unshift(action.payload)
             newMovies.unshift(action.payload)
-            newMovieState.filteredMovies = newFiltered
+            //newMovieState.filteredMovies = newFiltered
             newMovieState.movies = newMovies
 
             return newMovieState
+
+        case REMOVE_MOVIE:
+            const removeMovieState = Object.assign({}, state)
+            let removedMovie=''
+            let filteredRemoved = removeMovieState.filteredMovies.filter(movie => movie.ranked !== removeMovieState.filteredMovies[action.index].ranked)
+            for (let k=0; k < removeMovieState.movies.length; k++){
+            if(action.ranked === removeMovieState.movies[k].ranked ){
+            removedMovie=removeMovieState.movies.filter(movie => movie !== removeMovieState.movies[k])
+        }}
+            removeMovieState.movies = removedMovie
+            removeMovieState.filteredMovies = filteredRemoved
+            console.log(removeMovieState.filteredMovies)
+            return removeMovieState
 
         default: return state
     }
@@ -154,7 +171,7 @@ function removeFilter(filter, appliedFilters) {
 }
 
 function databaseSet(movies) {
-    return firebase.database().ref(localStorage.userId + "/").update(movies)
+    return firebase.database().ref(localStorage.userId + "/").set(movies)
 }
 
 function sortAsc(arr, field) {

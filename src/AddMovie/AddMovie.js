@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import TableHeader from '../Table/TableHeader'
 import TableData from '../Table/TableData'
 import { useSelector, useDispatch } from 'react-redux';
@@ -40,16 +40,18 @@ const AddMovie = () => {
         })
     }
     const isWatched = (event) => {
-        if(event.target.value === "Watched")
-        {setNewMovie({
-            ...newMovie,
-            watched: true
-        })}
+        if (event.target.value === "Watched") {
+            setNewMovie({
+                ...newMovie,
+                watched: true
+            })
+        }
         else {
             setNewMovie({
                 ...newMovie,
                 watched: false
-            })}
+            })
+        }
     }
     const addNewMovie = () => {
         dispatch(newMovieAddition(newMovie))
@@ -59,8 +61,8 @@ const AddMovie = () => {
     return (
         <div>
             <div class="box">
-                <div class="columns">
-                    <div class="column is-3">
+                <div class="columns is-desktop">
+                    <div class="column is-offset-1 ">
                         <strong>Add Rating</strong>
                         <input class="input is-primary"
                             type="text" pattern="[0-9]*"
@@ -68,7 +70,7 @@ const AddMovie = () => {
                             onChange={(event) => addMovieRating(event)}
                         />
                     </div>
-                    <div class="column is-3">
+                    <div class="column">
                         <strong>Add Title</strong>
                         <input
                             class="input is-primary"
@@ -77,7 +79,7 @@ const AddMovie = () => {
                             onChange={(event) => addMovieTitle(event)}
                         />
                     </div>
-                    <div class="column is-3">
+                    <div class="column">
                         <strong>Add Year</strong>
                         <input
                             class="input is-primary"
@@ -88,11 +90,13 @@ const AddMovie = () => {
                     </div>
                     <div class="column">
                         <strong>Watched?</strong>
-                        <div class="select is-success">
-                        <select onChange={(event) => isWatched(event)}>
-                            <option>Not Watched</option>
-                            <option>Watched</option>
-                        </select>
+                        <div>
+                            <div class="select is-success">
+                                <select onChange={(event) => isWatched(event)}>
+                                    <option>Not Watched</option>
+                                    <option>Watched</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -101,10 +105,10 @@ const AddMovie = () => {
                     onClick={addNewMovie}
                 >Add Movie
                 </button>
-               <Link to="/"> <button
+                <Link to="/"> <button
                     type="button"
-                    class="button is-success"
-                >Full Table</button>
+                    class="button is-info"
+                >Back to Full Table</button>
                 </Link>
             </div>
             <div class='Wrapper'>

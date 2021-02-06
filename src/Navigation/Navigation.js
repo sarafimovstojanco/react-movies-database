@@ -2,19 +2,19 @@ import React, { useEffect } from 'react'
 import {Link} from 'react-router-dom'
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { filterByValue, setPerPage } from '../redux/actions'
+import { filterByValue, loadExactPage } from '../redux/actions'
 import firebase from 'firebase';
 import "bulma/css/bulma.min.css"
 
 const Navigation = () => {
   const dispatch = useDispatch()
-  const searching = useSelector(state => state.searching)
+  const currentPage = useSelector(state => state.currentPage)
   let history = useHistory()
 
   const filterByInput = (event) => {
     let input = event.target.value.toLowerCase()
     if(!event.target.value){
-      dispatch(setPerPage())}
+      dispatch(loadExactPage(currentPage))}
     dispatch(filterByValue({ value: input }))
   }
 
