@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import TableHeader from '../Table/TableHeader'
 import TableData from '../Table/TableData'
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,7 +9,6 @@ import "bulma/css/bulma.min.css"
 
 const AddMovie = () => {
     const dispatch = useDispatch()
-    let movies = useSelector(state => state.movies)
     useEffect(() => {
         dispatch(getMovies())
     }, [])
@@ -58,7 +57,7 @@ const AddMovie = () => {
         dispatch(setDatabase())
     }
     return (
-        <div>
+        localStorage.isAuth ?  <div>
             <div class="box">
                 <div class="columns is-desktop">
                     <div class="column is-offset-1 ">
@@ -123,7 +122,7 @@ const AddMovie = () => {
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div> : <Redirect to={'/auth'} />
     )
 }
 
