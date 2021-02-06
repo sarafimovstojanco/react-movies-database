@@ -56,7 +56,6 @@ const AddMovie = () => {
     const addNewMovie = () => {
         dispatch(newMovieAddition(newMovie))
         dispatch(setDatabase())
-        console.log(movies)
     }
     return (
         <div>

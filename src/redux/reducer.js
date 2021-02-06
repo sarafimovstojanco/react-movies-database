@@ -131,11 +131,11 @@ export default function (state = initialState, action) {
             const newMovieState = Object.assign({}, state)
             console.log(action.payload)
             console.log(newMovieState.filteredMovies)
-            //let newFiltered = newMovieState.filteredMovies
+            let newFiltered = newMovieState.filteredMovies
             let newMovies = newMovieState.movies
-            //newFiltered.unshift(action.payload)
+            newFiltered.unshift(action.payload)
             newMovies.unshift(action.payload)
-            //newMovieState.filteredMovies = newFiltered
+            newMovieState.filteredMovies = newFiltered
             newMovieState.movies = newMovies
 
             return newMovieState
