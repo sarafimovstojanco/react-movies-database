@@ -52,7 +52,6 @@ const AddMovie = () => {
             })}
     }
     const addNewMovie = () => {
-        // movies.unshift(newMovie)
         dispatch(newMovieAddition(newMovie))
         dispatch(setDatabase())
         console.log(movies)
@@ -98,7 +97,7 @@ const AddMovie = () => {
                     </div>
                 </div>
                 <button
-                    class="button is-warning is-pulled-right"
+                    class="button is-info is-pulled-right"
                     onClick={addNewMovie}
                 >Add Movie
                 </button>
