@@ -3,7 +3,6 @@ import { Redirect, useHistory } from "react-router-dom";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import './SignInCard.css'
-import 'bootstrap/dist/css/bootstrap.min.css';
 import firebase from 'firebase';
 import { useDispatch } from 'react-redux'
 import { getMovies, setDatabase } from '../redux/actions';
@@ -73,7 +72,8 @@ const SignInCard = () => {
     firebase.auth().createUserWithEmailAndPassword(email, password).then((userCredential) => {
       var user = firebase.auth().currentUser
       user.updateProfile({
-        displayName: firstName})
+        displayName: firstName
+      })
       dispatch(getMovies())
       localStorage.setItem('userId', userCredential.user.uid)
       history.push('/auth')
@@ -95,7 +95,7 @@ const SignInCard = () => {
     if (user) {
       console.log("user is already signed in")
       history.push('/home')
-    } 
+    }
     else {
       firebase.auth().signInWithEmailAndPassword(email, password)
         .then((userCredential) => {

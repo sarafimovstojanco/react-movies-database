@@ -4,7 +4,6 @@ import TableHeader from './TableHeader.js';
 import PerPageSelector from '../Navigation/PerPageSelector';
 import Pagination from '../Navigation/Pagination';
 import './Table.css'
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Table = () => {
 
@@ -21,8 +20,8 @@ const Table = () => {
           />
         </tbody>
       </table>
-      <Pagination/>
-      <PerPageSelector/>
+      <Pagination />
+      <PerPageSelector />
     </div>
   )
 }

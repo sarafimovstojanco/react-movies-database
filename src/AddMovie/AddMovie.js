@@ -5,8 +5,6 @@ import TableData from '../Table/TableData'
 import Navbar from '../Navigation/Navbar'
 import { useDispatch } from 'react-redux';
 import { getMovies, setDatabase, newMovieAddition } from '../redux/actions'
-import "bulma/css/bulma.min.css"
-
 
 const AddMovie = () => {
     const dispatch = useDispatch()

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import Spinner from './Spinner/Spinner'
 import Table from './Table/Table';
 import { getMovies } from './redux/actions'
@@ -13,14 +12,14 @@ const App = _ => {
 
   useEffect(() => {
     dispatch(getMovies())
-  },[])
-  
+  }, [])
+
   return <>
-        {loading ? <Spinner /> : <>
-          <Navbar/>
-          <Table/>
-        </>}
-      </>
+    {loading ? <Spinner /> : <>
+      <Navbar />
+      <Table />
+    </>}
+  </>
 }
 
 export default App;
