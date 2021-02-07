@@ -1,5 +1,5 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { filterByValue, loadExactPage } from '../redux/actions'
@@ -50,21 +50,18 @@ const Navbar = () => {
       onClick={onLogoutHandler}
     >Logout</button></Link> 
 
-
-
   return (
-    <nav class="navbar is-transparent pb-0 is-fixed-top ">
+    <nav class="navbar is-light pb-0 is-fixed-top ">
     <div class="navbar-brand">
         <strong class="navbar-item">{localStorage.firstName}</strong>
     </div>
-  
     <div id="navbarExampleTransparentExample" class="navbar-menu">
       <div class="navbar-start">
         <a class="navbar-item pl-0" href="/">
           Home
         </a>
         <a class="navbar-item" href="/add-movie">
-          New Movies
+         Add New Movies
         </a>
       </div>
       <div class="navbar-end">

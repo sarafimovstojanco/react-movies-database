@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 import TableHeader from '../Table/TableHeader'
 import TableData from '../Table/TableData'
 import Navbar from '../Navigation/Navbar'
@@ -62,7 +62,7 @@ const AddMovie = () => {
             <Navbar />
             <div class="pt-6">
                 <div class="pt-5">
-                    <div class="columns is-desktop">
+                    <div class="columns is-mobile">
                         <div class="column is-offset-1 ">
                             <strong>Add Rating</strong>
                             <input class="input is-primary"

@@ -36,7 +36,7 @@ const TableData = () => {
             <td>{originalTitle}</td>
             <td>{year}</td>
             <td>{watched ? <a onClick={() => onClickHandler(index, ranked)}> ✔️ Watched </a> : <a onClick={() => onClickHandler(index, ranked)}>{checkBox}</a>}</td>
-            <td><button class="delete has-background-danger" onClick={() => removeMovieFunction(index, ranked)}></button></td>
+            <td><button class="delete has-background-danger" onClick={() => removeMovieFunction(index, originalTitle)}></button></td>
           </tr>
   
         )
