@@ -95,12 +95,12 @@ export const newMovieAddition = newMovie => {
     }
 }
 
-export const removeMovie = (index, ranked) => {
+export const removeMovie = (index, originalTitle) => {
     return dispatch => {
         dispatch({
             type: REMOVE_MOVIE,
             index: index,
-            ranked: ranked
+            originalTitle: originalTitle
         })
     }
 }

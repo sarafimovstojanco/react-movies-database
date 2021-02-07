@@ -1,13 +1,13 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Navigation from '../Navigation/Navigation';
+import Navbar from '../Navigation/Navbar';
 import SignInCard from './SignInCard';
 
 
 const Auth = () => {
 return (
   <div>
-    <Navigation/>
+    <Navbar/>
     <SignInCard/>
    </div>
 )}
