@@ -143,9 +143,9 @@ export default function (state = initialState, action) {
         case REMOVE_MOVIE:
             const removeMovieState = Object.assign({}, state)
             let removedMovie=''
-            let filteredRemoved = removeMovieState.filteredMovies.filter(movie => movie.ranked !== removeMovieState.filteredMovies[action.index].ranked)
+            let filteredRemoved = removeMovieState.filteredMovies.filter(movie => movie.originalTitle !== removeMovieState.filteredMovies[action.index].originalTitle)
             for (let k=0; k < removeMovieState.movies.length; k++){
-            if(action.ranked === removeMovieState.movies[k].ranked ){
+            if(action.originalTitle === removeMovieState.movies[k].originalTitle ){
             removedMovie=removeMovieState.movies.filter(movie => movie !== removeMovieState.movies[k])
         }}
             removeMovieState.movies = removedMovie

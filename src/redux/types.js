@@ -13,6 +13,3 @@ export const MOVIES_PER_PAGE = 'MOVIES_PER_PAGE'
 export const SET_FIRST_NAME = 'SET_FIRST_NAME'
 export const SET_NEW_MOVIE = 'SET_NEW_MOVIE'
 export const REMOVE_MOVIE = 'REMOVE_MOVIE'
-
-
-//export const FINISH_LOADING = 'FINISH_LOADING'

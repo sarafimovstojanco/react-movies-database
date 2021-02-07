@@ -32,19 +32,17 @@ const TableData = () => {
       if (localStorage.isAuth) {
         return (
           <tr key={releaseDate}>
-            {/* <td >{ranked}</td> */}
             <td>{imdbRating}</td>
             <td>{originalTitle}</td>
             <td>{year}</td>
             <td>{watched ? <a onClick={() => onClickHandler(index, ranked)}> ✔️ Watched </a> : <a onClick={() => onClickHandler(index, ranked)}>{checkBox}</a>}</td>
-            <td><button class="delete" onClick={() => removeMovieFunction(index, ranked)}></button></td>
+            <td><button class="delete has-background-danger" onClick={() => removeMovieFunction(index, originalTitle)}></button></td>
           </tr>
   
         )
       }
       else return (
         <tr key={releaseDate}>
-          {/* <td >{ranked}</td> */}
           <td>{imdbRating}</td>
           <td>{originalTitle}</td>
           <td>{year}</td>

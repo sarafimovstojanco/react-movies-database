@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react'
-import {Link} from 'react-router-dom'
+import React from 'react'
+import { Link } from 'react-router-dom'
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { filterByValue, loadExactPage } from '../redux/actions'
 import firebase from 'firebase';
 import "bulma/css/bulma.min.css"
 
-const Navigation = () => {
+const Navbar = () => {
   const dispatch = useDispatch()
   const currentPage = useSelector(state => state.currentPage)
   let history = useHistory()
@@ -17,17 +17,14 @@ const Navigation = () => {
       dispatch(loadExactPage(currentPage))}
     dispatch(filterByValue({ value: input }))
   }
-
   let searchBar = 
-    <form class="form-inline">
       <input
-        class="form-control mr-sm-2"
+        class="input"
         aria-label="Search"
         type="text"
         placeholder="Search Title..."
         onChange={(e) => filterByInput(e)}
       />
-    </form>
 
   const onLoginHandler = () => {
     history.push('/auth')
@@ -41,40 +38,45 @@ const Navigation = () => {
     history.push('/auth')
   }
 
-  let loginButton = !localStorage.isAuth ?
+  let loginButton = 
   <Link to="/auth"> <button
-      type="button"
-      class="btn btn-outline-success"
-      href="/auth"
+      class="button is-success"
       onClick={onLoginHandler}
-    > Login </button> </Link> : null
+    > Login </button> </Link>
 
   let logoutButton =
-    <button
-      type="button"
-      class="button is-outlined"
-      href="/"
+  <Link to="/auth"><button
+      class="button is-dark"
       onClick={onLogoutHandler}
-    >Logout</button>
-
-
+    >Logout</button></Link> 
 
   return (
-    <nav class="navbar sticky-top navbar-expand navbar-light bg-light">
-      <a class="navbar-brand" href="/">{localStorage.isAuth ? 'Hi ' + localStorage.firstName : 'RMD'}</a>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-          {localStorage.isAuth ?  <Link to="/add-movie"><button class="button is-info" href="/add-movie">Add New Movies</button></Link>: null}
-          </li>
-        </ul>
-        <form class="form-inline my-2">
-          {searchBar}
-          {localStorage.isAuth ? logoutButton : loginButton}
-        </form>
+    <nav class="navbar is-light pb-0 is-fixed-top ">
+    <div class="navbar-brand">
+        <strong class="navbar-item">{localStorage.firstName}</strong>
+    </div>
+    <div id="navbarExampleTransparentExample" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item pl-0" href="/">
+          Home
+        </a>
+        <a class="navbar-item" href="/add-movie">
+         Add New Movies
+        </a>
       </div>
-    </nav>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="field is-grouped">
+          {searchBar}
+            <p class="control">
+            {localStorage.isAuth ? logoutButton : loginButton}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
   )
 }
 
-export default Navigation
+export default Navbar
