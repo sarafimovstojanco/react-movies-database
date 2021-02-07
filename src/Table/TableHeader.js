@@ -7,7 +7,6 @@ const TableHeader = () => {
    const dispatch = useDispatch()
    const [order, setOrder] = useState(true)
    let header =  [
-      // {originalName: "ranked", name: "Ranked"},
       {originalName: "imdbRating", name:"IMDB Rating"},
       {originalName: "originalTitle", name:"Title"},
       {originalName: "year", name: "Year"}];
@@ -19,11 +18,11 @@ const TableHeader = () => {
 
    if(localStorage.isAuth) {
       header =  [
-         // {originalName: "ranked", name: "Ranked"},
          {originalName: "imdbRating", name:"IMDB Rating"},
          {originalName: "originalTitle", name:"Title"},
          {originalName: "year", name: "Year"},
-         {originalName: "watched", name: "Watched"}]
+         {originalName: "watched", name: "Watched"},
+         {originalName: "remove", name: "Remove"}]
       }
 
    return header.map((item, index) => {
