@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect, useHistory } from "react-router-dom";
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 import './SignInCard.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import firebase from 'firebase';
@@ -112,26 +110,26 @@ const SignInCard = () => {
     }
   }
 
-  let button = !switchSignIn ? (<Button
+  let button = !switchSignIn ? (<button
     variant="primary"
     type="submit"
     onClick={onSignUpHandler}
   >
     Sign Up !
-  </Button>) :
+  </button>) :
     (
-      <Button
+      <button
         variant="primary"
         type="submit"
         onClick={onSignInHandler}
       >
         Sign In !
-      </Button>)
+      </button>)
 
   let signMessage = switchSignIn ? (
-    <Form.Label>Please Sign In</Form.Label>
+    <a>Please Sign In</a>
   ) :
-    <Form.Label>Please Sign Up</Form.Label>
+    <a>Please Sign Up</a>
 
   let switchButton = (
     <button
@@ -142,40 +140,40 @@ const SignInCard = () => {
 
   let signCard = (
     <div class='SignInWrapper'>
-      <Form>
-        <Form.Group controlId="formBasicEmail">
+      <div>
+        <div controlId="formBasicEmail">
           {signMessage}
           {!switchSignIn ?
-            <Form.Group controlId="formBasicEmail">
-              <Form.Control
+            <div controlId="formBasicEmail">
+              <input
                 type="text"
                 placeholder="First Name"
                 onChange={firstNameInputHandler}
               />
-            </Form.Group>
+            </div>
             : null}
-          <Form.Text></Form.Text>
-          <Form.Control
+          <div></div>
+          <input
             type="email"
             placeholder="Enter email"
             onChange={emailInputHandler}
           />
           <div className="text-danger">{errors.email}</div>
-        </Form.Group>
-        <Form.Group controlId="formBasicPassword">
-          <Form.Control
+        </div>
+        <div controlId="formBasicPassword">
+          <input
             type="password"
             placeholder="Password"
             onChange={passwordInputHandler}
           />
           <div className="text-danger">{errors.password}</div>
-        </Form.Group>
-        <Form.Group controlId="formBasicCheckbox">
-          {switchSignIn ? <Form.Check type="checkbox" label="Remember Me" /> : null}
-        </Form.Group>
-        <Form.Group>{button}</Form.Group>
-        <Form.Group>{switchButton}</Form.Group>
-      </Form>
+        </div>
+        <div controlId="formBasicCheckbox">
+          {switchSignIn ? <div type="checkbox" label="Remember Me" /> : null}
+        </div>
+        <div>{button}</div>
+        <div>{switchButton}</div>
+      </div>
     </div>
   )
   console.warn = console.error = () => { };

@@ -2,10 +2,10 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Spinner from './Spinner/Spinner'
-import Table from './Table/Table';
+import MaterialTable from './Table/MaterialTable';
 import { getMovies } from './redux/actions'
 import './App.css';
-import Navbar from './Navigation/Navbar';
+import NavCool from './Navigation/NavCool';
 
 const App = _ => {
   const dispatch = useDispatch()
@@ -17,8 +17,8 @@ const App = _ => {
   
   return <>
         {loading ? <Spinner /> : <>
-          <Navbar/>
-          <Table/>
+          <NavCool/>
+          <MaterialTable/>
         </>}
       </>
 }
