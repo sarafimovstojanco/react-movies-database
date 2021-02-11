@@ -1,6 +1,5 @@
-import { GET_MOVIES, WATCHED, FILTER_BY_VALUE, DATABASE_SET, SORT_BY, LOAD_EXACT_PAGE, MOVIES_PER_PAGE, SET_FIRST_NAME, SET_NEW_MOVIE, REMOVE_MOVIE } from './types'
+import { GET_MOVIES, WATCHED, FILTER_BY_VALUE, GET_THEME_COLOR, DATABASE_SET, SORT_BY, LOAD_EXACT_PAGE, GET_DARK_MODE, SET_DARK_MODE, DATABASE_DARK_MODE_SET, MOVIES_PER_PAGE, SET_FIRST_NAME, SET_NEW_MOVIE, REMOVE_MOVIE, CHANGE_THEME, YOUR_RATING, DATABASE_THEME_SET, GET_THEME, DATE_SET, DATE } from './types'
 import firebase from 'firebase';
-import { act } from 'react-dom/test-utils';
 
 const initialState = {
     movies: [],
@@ -11,7 +10,15 @@ const initialState = {
     countPerPage: '',
     loading: true,
     firstName: '',
-    appliedFilters: []
+    appliedFilters: [],
+    birthdayDate: {date:''},
+    themeStyle: { background: '#2E3B55' },
+    themeColor: {
+        red: false,
+        blue: true,
+        green: false
+    },
+    darkMode: false
 }
 
 export default function (state = initialState, action) {
@@ -30,9 +37,32 @@ export default function (state = initialState, action) {
             getState.upperCount = getState.countPerPage * getState.currentPage
             getState.lowerCount = getState.upperCount - getState.countPerPage
             getState.filteredMovies = getState.movies.slice(getState.lowerCount, getState.upperCount)
-            console.log(action.payload)
 
             return getState
+
+        case GET_THEME:
+            let getThemeState = Object.assign({}, state)
+            getThemeState.loading = true
+            getThemeState.themeStyle = action.payload
+            getThemeState.loading = false
+
+            return getThemeState
+
+        case GET_THEME_COLOR:
+            let getThemeColorState = Object.assign({}, state)
+            getThemeColorState.loading = true
+            getThemeColorState.themeColor = action.payload
+            getThemeColorState.loading = false
+
+            return getThemeColorState
+
+        case GET_DARK_MODE:
+                    let getDarkModeState = Object.assign({}, state)
+                    getDarkModeState.loading = true
+                    getDarkModeState.darkMode = action.payload
+                    getDarkModeState.loading = false
+
+                    return getDarkModeState
 
         case WATCHED:
             let watched = Object.assign({}, state);
@@ -47,7 +77,6 @@ export default function (state = initialState, action) {
         case FILTER_BY_VALUE:
             let newState = Object.assign({}, state);
             let value = action.payload.value;
-            console.log(value)
             let filteredMovies = newState.movies.filter(movie => {
                 return movie.originalTitle.toLowerCase().includes(value)
 
@@ -118,7 +147,6 @@ export default function (state = initialState, action) {
         case SET_FIRST_NAME:
             const firstNameState = Object.assign({}, state)
             firstNameState.firstName = action.payload
-            console.log(firstNameState)
             return firstNameState
 
         case DATABASE_SET:
@@ -127,10 +155,33 @@ export default function (state = initialState, action) {
                 ...state,
             }
 
+        case DATABASE_THEME_SET:
+            databaseThemeSet(state.themeStyle)
+            databaseThemeColorSet(state.themeColor)
+        return {
+            ...state,
+        }
+
+        case SET_DARK_MODE:
+            const darkModeState = Object.assign({}, state)
+            darkModeState.darkMode = action.payload
+
+            return darkModeState
+
+        case DATABASE_DARK_MODE_SET:
+            databaseDarkModeSet(state.darkMode)
+            return {
+                ...state,
+            }
+
+        case DATE_SET:
+            databaseDateSet(state.birthdayDate)
+        return {
+            ...state,
+        }
+
         case SET_NEW_MOVIE:
             const newMovieState = Object.assign({}, state)
-            console.log(action.payload)
-            console.log(newMovieState.filteredMovies)
             let newFiltered = newMovieState.filteredMovies
             let newMovies = newMovieState.movies
             newFiltered.unshift(action.payload)
@@ -150,8 +201,43 @@ export default function (state = initialState, action) {
         }}
             removeMovieState.movies = removedMovie
             removeMovieState.filteredMovies = filteredRemoved
-            console.log(removeMovieState.filteredMovies)
             return removeMovieState
+
+        case CHANGE_THEME:
+            const changeThemeState = Object.assign({}, state)
+            changeThemeState.themeStyle = action.payload
+            if (action.payload.background ==='#dc004e'){
+                changeThemeState.themeColor.red=true
+                changeThemeState.themeColor.blue=false
+                changeThemeState.themeColor.green=false
+            }
+            else if(action.payload.background==='#2E3B55'){
+                changeThemeState.themeColor.red=false
+                changeThemeState.themeColor.blue=true
+                changeThemeState.themeColor.green=false
+            }
+            else {
+                changeThemeState.themeColor.red=false
+                changeThemeState.themeColor.blue=false
+                changeThemeState.themeColor.green=true
+            }
+            
+            return changeThemeState
+
+        case DATE:
+            const dateState = Object.assign({}, state)
+            dateState.birthdayDate = action.date
+
+            return dateState
+
+        case YOUR_RATING:
+            
+            const yourRatingState = Object.assign({}, state)
+            yourRatingState.filteredMovies[action.index].yourRating = action.yourRating
+            for (let i; i < yourRatingState.movies.length; i++) {
+                if (yourRatingState.movies[i].ranked === action.ranked)
+                    return yourRatingState.movies.yourRating = action.yourRating
+            }
 
         default: return state
     }
@@ -171,7 +257,23 @@ function removeFilter(filter, appliedFilters) {
 }
 
 function databaseSet(movies) {
-    return firebase.database().ref(localStorage.userId + "/").set(movies)
+    return firebase.database().ref(localStorage.userId + "/moviesData/").set(movies)
+}
+
+function databaseThemeSet(themeStyle) {
+    return firebase.database().ref(localStorage.userId + "/extras/").set(themeStyle)
+}
+
+function databaseThemeColorSet(themeColor) {
+    return firebase.database().ref(localStorage.userId + "/extras/themeColor/").set(themeColor)
+}
+
+function databaseDateSet(birthdayDate) {
+    return firebase.database().ref(localStorage.userId + "/extras/birthdayDate/").set(birthdayDate)
+}
+
+function databaseDarkModeSet(darkMode) {
+    return firebase.database().ref(localStorage.userId + "/extras/darkMode/").set(darkMode)
 }
 
 function sortAsc(arr, field) {

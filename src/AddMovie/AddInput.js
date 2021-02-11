@@ -15,6 +15,7 @@ const AddInput = () =>{
 const dispatch = useDispatch()
 
 let [newMovie, setNewMovie] = useState({
+    actors: ['Stojanco Sarafimov', 'Stoci'],
     imdbRating: '',
     originalTitle: '',
     year: '',
@@ -71,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
   const classes = useStyles();
 
   return (
-    <Box width="100%" m={+2} mx={34}>
+    <Box>
     <form className={classes.root} noValidate autoComplete="off">
       <TextField id="outlined-basic" label="IMDB Rating..." variant="outlined" onChange={addMovieRating}/>
       <TextField id="outlined-basic" label="Movie Title..." variant="outlined" onChange={addMovieTitle}/>
@@ -92,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
         </Select>
       </FormControl>
     </form>
-    <Box width="100%" mx={50} m={+2} >
+    <Box mt={+2} >
     <Button variant="contained" onClick={addNewMovie}>Add Movie</Button>
     </Box>
     </Box>

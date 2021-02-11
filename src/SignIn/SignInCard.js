@@ -3,11 +3,15 @@ import { Redirect, useHistory } from "react-router-dom";
 import './SignInCard.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import firebase from 'firebase';
-import { useDispatch } from 'react-redux'
-import { getMovies, setDatabase } from '../redux/actions';
+import Spinner from '../Spinner/Spinner'
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import { useDispatch, useSelector } from 'react-redux'
+import { getMovies, setDatabase, getTheme, setThemeStyle } from '../redux/actions';
 
 const SignInCard = () => {
   const dispatch = useDispatch()
+  const loading = useSelector(state => state.loading)
   let [switchSignIn, setSwitchSignIn] = useState(true)
   let [email, setEmail] = useState('')
   let [password, setPassword] = useState('')
@@ -19,6 +23,7 @@ const SignInCard = () => {
   let history = useHistory()
   useEffect(() => {
     dispatch(getMovies())
+    dispatch(getTheme())
   }, [])
 
   const emailInputHandler = (event) => {
@@ -73,6 +78,8 @@ const SignInCard = () => {
       user.updateProfile({
         displayName: firstName})
       dispatch(getMovies())
+      dispatch(getTheme())
+      dispatch(setThemeStyle({ background: '#2E3B55' }))
       localStorage.setItem('userId', userCredential.user.uid)
       history.push('/auth')
       dispatch(setDatabase())
@@ -88,6 +95,7 @@ const SignInCard = () => {
   const onSignInHandler = (event) => {
     event.preventDefault()
     dispatch(getMovies())
+    dispatch(getTheme())
     validateEmail(email) && validatePassword(password)
     var user = firebase.auth().currentUser;
     if (user) {
@@ -110,21 +118,23 @@ const SignInCard = () => {
     }
   }
 
-  let button = !switchSignIn ? (<button
-    variant="primary"
+  let button = !switchSignIn ? (<Button
+    variant="contained"
+    color="primary"
     type="submit"
     onClick={onSignUpHandler}
   >
     Sign Up !
-  </button>) :
+  </Button>) :
     (
-      <button
-        variant="primary"
+      <Button
+        variant="contained"
+        color="primary"
         type="submit"
         onClick={onSignInHandler}
       >
         Sign In !
-      </button>)
+      </Button>)
 
   let signMessage = switchSignIn ? (
     <a>Please Sign In</a>
@@ -132,40 +142,31 @@ const SignInCard = () => {
     <a>Please Sign Up</a>
 
   let switchButton = (
-    <button
-      type="button"
-      class="btn btn-success"
-      onClick={SwitchSignInHandler}>Swtich to {!switchSignIn ? 'Sign In' : "Sign Up"}</button>
+    <div style={{padding: '10px'}}>
+    <Button
+    type="submit"
+    color="#b71c1c"
+    variant="contained"
+    onClick={SwitchSignInHandler}>Swtich to {!switchSignIn ? 'Sign In' : "Sign Up"}</Button></div>
   )
 
   let signCard = (
-    <div class='SignInWrapper'>
+    <div >
       <div>
         <div controlId="formBasicEmail">
           {signMessage}
           {!switchSignIn ?
-            <div controlId="formBasicEmail">
-              <input
-                type="text"
-                placeholder="First Name"
-                onChange={firstNameInputHandler}
-              />
+            <div controlId="formBasicEmail" style={{padding:'10px'}}>
+              <TextField id="outlined-basic" label="First Name" variant="outlined" onChange={firstNameInputHandler}/>
             </div>
             : null}
           <div></div>
-          <input
-            type="email"
-            placeholder="Enter email"
-            onChange={emailInputHandler}
-          />
+          <TextField id="outlined-basic" label="Enter email" variant="outlined" onChange={emailInputHandler}/>
+
           <div className="text-danger">{errors.email}</div>
         </div>
-        <div controlId="formBasicPassword">
-          <input
-            type="password"
-            placeholder="Password"
-            onChange={passwordInputHandler}
-          />
+        <div controlId="formBasicPassword" style={{padding:'10px'}}>
+        <TextField id="outlined-basic" label="Password" variant="outlined" onChange={passwordInputHandler}/>
           <div className="text-danger">{errors.password}</div>
         </div>
         <div controlId="formBasicCheckbox">
@@ -178,6 +179,7 @@ const SignInCard = () => {
   )
   console.warn = console.error = () => { };
   return (
+    loading ? <Spinner /> :
     localStorage.isAuth ? <Redirect to={'/table'} /> : signCard
   )
 }

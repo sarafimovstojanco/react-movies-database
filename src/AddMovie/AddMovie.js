@@ -1,37 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom'
-import TableHeader from '../Table/TableHeader'
-import TableData from '../Table/TableData'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import Spinner from '../Spinner/Spinner'
 import { getMovies, setDatabase, newMovieAddition } from '../redux/actions'
 import "bulma/css/bulma.min.css"
-import NavCool from '../Navigation/NavCool';
+import Navbar from '../Navigation/Navbar';
 import AddInput from './AddInput'
+import MaterialTable from '../Table/MaterialTable';
+import Box from '@material-ui/core/Box';
 
 const AddMovie = () => {
+    const loading = useSelector(state => state.loading)
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(getMovies())
     }, [])
 
     return (
-        localStorage.isAuth ? <div>
-            <NavCool />
-            <AddInput />
-            <div class='box px-6'>
-                <div class='px-6'>
-                    <h3>Recently Added Movies</h3>
-                    <table class={"table table-bordered text-center"}>
-                        <thead class="thead-dark"> 
-                            <TableHeader />
-                        </thead>
-                        <tbody>
-                            <TableData />
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div> : <Redirect to={'/auth'} />
+        loading ? <Spinner /> :
+        localStorage.isAuth ? 
+        <div>
+        <Navbar />
+        <div style={{
+        textAlign: 'center',
+        margin: 'auto',
+        width: '80%',
+        padding: '10px'
+        }}>
+            <Box mt={+5}>
+                <AddInput />
+            </Box>
+            <Box mt={+8} >
+                <MaterialTable/>
+            </Box>
+        </div> </div>: <Redirect to={'/auth'} />
     )
 }
 
