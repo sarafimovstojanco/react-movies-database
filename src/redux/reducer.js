@@ -12,7 +12,7 @@ const initialState = {
     firstName: '',
     appliedFilters: [],
     birthdayDate: {date:''},
-    themeStyle: { background: '#2E3B55' },
+    themeStyle: { background: localStorage.themeStyle },
     themeColor: {
         red: false,
         blue: true,
@@ -25,8 +25,8 @@ export default function (state = initialState, action) {
     switch (action.type) {
         case GET_MOVIES:
             let getState = Object.assign({}, state)
+            getState.loading = true
             getState.movies = action.payload.data.slice(0, action.payload.data.length).map((obj, index)=> ({ ...obj, ranked: index+1 }))
-            getState.loading = false
             getState.firstName = action.payload.firstName
             getState.countPerPage = action.payload.countPerPage || 10
             getState.currentCount = getState.countPerPage
@@ -37,6 +37,7 @@ export default function (state = initialState, action) {
             getState.upperCount = getState.countPerPage * getState.currentPage
             getState.lowerCount = getState.upperCount - getState.countPerPage
             getState.filteredMovies = getState.movies.slice(getState.lowerCount, getState.upperCount)
+            getState.loading = false
 
             return getState
 
@@ -66,6 +67,7 @@ export default function (state = initialState, action) {
 
         case WATCHED:
             let watched = Object.assign({}, state);
+            console.log(watched)
             watched.filteredMovies[action.payload].watched = !watched.filteredMovies[action.payload].watched
             for (let i; i < watched.movies.length; i++) {
                 if (watched.movies[i].ranked === action.ranked)
@@ -79,7 +81,6 @@ export default function (state = initialState, action) {
             let value = action.payload.value;
             let filteredMovies = newState.movies.filter(movie => {
                 return movie.originalTitle.toLowerCase().includes(value)
-
             });
             let appliedFilters = state.appliedFilters;
             if (value) {
@@ -201,6 +202,7 @@ export default function (state = initialState, action) {
         }}
             removeMovieState.movies = removedMovie
             removeMovieState.filteredMovies = filteredRemoved
+
             return removeMovieState
 
         case CHANGE_THEME:
@@ -239,6 +241,8 @@ export default function (state = initialState, action) {
                     return yourRatingState.movies.yourRating = action.yourRating
             }
 
+            return yourRatingState
+
         default: return state
     }
 }
@@ -261,11 +265,11 @@ function databaseSet(movies) {
 }
 
 function databaseThemeSet(themeStyle) {
-    return firebase.database().ref(localStorage.userId + "/extras/").set(themeStyle)
+    return firebase.database().ref(localStorage.userId + "/extras/").update(themeStyle)
 }
 
 function databaseThemeColorSet(themeColor) {
-    return firebase.database().ref(localStorage.userId + "/extras/themeColor/").set(themeColor)
+    return firebase.database().ref(localStorage.userId + "/extras/themeColor/").update(themeColor)
 }
 
 function databaseDateSet(birthdayDate) {

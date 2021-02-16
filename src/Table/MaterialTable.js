@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, lighten } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
@@ -21,26 +21,135 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useDispatch, useSelector } from 'react-redux'
-import { setWatched, setDatabase, sortBy, loadExactPage, yourRating, removeMovie } from '../redux/actions'
+import { setWatched, setDatabase, sortBy, loadExactPage, yourRating, removeMovie, getMovies } from '../redux/actions'
+
+const useRowStyles = makeStyles({
+  root: {
+    '& > *': {
+      borderBottom: 'unset',
+    },
+  },
+});
+
+const GreenCheckbox = withStyles({
+  root: {
+    color: green[400],
+    '&$checked': {
+      color: green[600],
+    },
+  },
+  checked: {},
+})((props) => <Checkbox color="default" {...props} />);
+
+const Row = ({data, index}) => {
+  const dispatch = useDispatch()
+  const classes = useRowStyles();
+  const filtered = useSelector(state => state.filteredMovies)
+  const [rating, setRating] = useState(filtered.yourRating)
+  const [open, setOpen] = useState(false)
+  const [state, setState] = useState({checkedG: true})
+
+  const handleChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.checked });
+  }
+
+  const removeMovieFunction = ranked => {
+    dispatch(removeMovie(index, ranked))
+    dispatch(setDatabase())
+  }
+
+  const onClickHandler = ranked => {
+    dispatch(setWatched(index, ranked))
+    dispatch(setDatabase())
+  }
+
+  const onRatingChange = (rating) => {
+    setRating(rating)
+    dispatch(yourRating(rating, index, data.ranked ))
+    dispatch(setDatabase())
+  }
+  return (
+    <React.Fragment>
+      <TableRow className={classes.root}>
+        <TableCell>
+          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+        <TableCell component="th" scope="row">
+          <div style={{ fontSize: '20px' }}>
+            {data.originalTitle}
+          </div>
+        </TableCell>
+        <TableCell align="right">
+          <div style={{ fontSize: '18px' }}>
+            {data.year}</div>
+        </TableCell>
+        <TableCell align="right" >
+          <div style={{ fontSize: '20px' }}>
+            {data.imdbRating}</div>
+        </TableCell>
+       {localStorage.isAuth ? <TableCell align="right">
+          <FormControlLabel
+            control={<GreenCheckbox checked={data.watched} onClick={() => onClickHandler(data.ranked)} onChange={handleChange} name="checkedG" />}
+            label="Watched"
+          />
+        </TableCell> : null}
+        {localStorage.isAuth ? <TableCell align="right">
+          <Rating
+            value={data.yourRating ? data.yourRating : null}
+            onChange={(e, rating) => onRatingChange(rating)}
+          />
+        </TableCell> : null}
+        {localStorage.isAuth ? <TableCell align="right">
+          <IconButton aria-label="delete" onClick={() => removeMovieFunction(data.originalTitle)}>
+            <DeleteIcon fontSize="medium" />
+          </IconButton>
+        </TableCell>  : null}
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box margin={1}>
+              <div style={{
+                textAlign: 'left',
+                fontSize: '20px',
+                paddingLeft: '5%'
+              }}>
+                <Typography variant="h6" gutterBottom component="div">
+                  Main Actors:
+            </Typography>
+                <Table size="small" aria-label="purchases">
+                  <TableHead>
+                    <TableRow>
+                      {data.actors.map((actor) =>
+                        <li>{actor}</li>)
+                      }
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                  </TableBody>
+                </Table>
+              </div>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </React.Fragment>
+  );
+}
 
 const MaterialTable = () => {
   const dispatch = useDispatch()
   const themeStyle = useSelector(state => state.themeStyle)
+  const searching = useSelector(state => state.searching)
+  const currentPage = useSelector(state => state.currentPage)
   const [order, setOrder] = useState(true)
   const filtered = useSelector(state => (state.filteredMovies))
-  //const state = useSelector(state => (state))
-  const [state, setState] = React.useState({
-    checkedG: true,
-  });
-
-  const [rating, setRating] = useState(null)
-
-  const youRatingHandler = (originalTitle) => {
-    console.log(originalTitle)
-
-  }
-
-
+  //const updateState = useSelector(state => (state)) //needed for rendering the table after input
+  useEffect(()=>{
+    dispatch(loadExactPage(currentPage))
+  }, [])
   const useToolbarStyles = makeStyles((theme) => ({
     root: {
       paddingLeft: theme.spacing(2),
@@ -61,119 +170,15 @@ const MaterialTable = () => {
     },
   }));
   const classes = useToolbarStyles();
-  const GreenCheckbox = withStyles({
-    root: {
-      color: green[400],
-      '&$checked': {
-        color: green[600],
-      },
-    },
-    checked: {},
-  })((props) => <Checkbox color="default" {...props} />);
-  const handleChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
-  };
-
-  const removeMovieFunction = (index, ranked) => {
-    dispatch(removeMovie(index, ranked))
-    dispatch(setDatabase())
-  }
-
-  const onClickHandler = (index, ranked) => {
-    dispatch(setWatched(index, ranked))
-    dispatch(setDatabase())
-  }
 
   const sortByInput = (item) => {
     dispatch(sortBy(item, order))
     setOrder(!order)
   }
 
-  const useRowStyles = makeStyles({
-    root: {
-      '& > *': {
-        borderBottom: 'unset',
-      },
-    },
-  });
-
-  function Row(props) {
-    const { row, index } = props;
-    const [open, setOpen] = React.useState(false);
-    const classes = useRowStyles();
-    return (
-      <React.Fragment>
-        <TableRow className={classes.root}>
-          <TableCell>
-            <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </TableCell>
-          <TableCell component="th" scope="row">
-            <div style={{ fontSize: '20px' }}>
-              {row.originalTitle}
-            </div>
-          </TableCell>
-          <TableCell align="right">
-            <div style={{ fontSize: '18px' }}>
-              {row.year}</div>
-          </TableCell>
-          <TableCell align="right" >
-            <div style={{ fontSize: '20px' }}>
-              {row.imdbRating}</div>
-          </TableCell>
-          <TableCell align="right">
-            <FormControlLabel
-              control={<GreenCheckbox checked={row.watched} onClick={() => onClickHandler(index, row.ranked)} onChange={handleChange} name="checkedG" />}
-              label="Watched"
-            />
-          </TableCell>
-          <TableCell align="right">
-            <Rating
-              name="simple-controlled"
-              value={row.yourRating}
-              onChange={() => console.log(index)}
-            />
-          </TableCell>
-          <TableCell align="right">
-            <IconButton aria-label="delete" onClick={() => removeMovieFunction(index, row.originalTitle)}>
-              <DeleteIcon fontSize="medium" />
-            </IconButton>
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-            <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box margin={1}>
-                <div style={{
-                  textAlign: 'left',
-                  fontSize: '20px',
-                  paddingLeft: '5%'
-                }}>
-                  <Typography variant="h6" gutterBottom component="div">
-                    Actors:
-              </Typography>
-                  <Table size="small" aria-label="purchases">
-                    <TableHead>
-                      <TableRow>
-                        {row.actors.map((actor) =>
-                          <li>{actor}</li>)}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                    </TableBody>
-                  </Table>
-                </div>
-              </Box>
-            </Collapse>
-          </TableCell>
-        </TableRow>
-      </React.Fragment>
-    );
-  }
-
   Row.propTypes = {
     row: PropTypes.shape({
+      yourRating: PropTypes.number,
       history: PropTypes.arrayOf(
         PropTypes.shape({
           amount: PropTypes.number.isRequired,
@@ -201,18 +206,16 @@ const MaterialTable = () => {
               </TableCell>
               <TableCell style={{ color: '#FFFFFF' }} onClick={() => sortByInput('year')} align="right">Year</TableCell>
               <TableCell style={{ color: '#FFFFFF' }} onClick={() => sortByInput('imdbRating')} align="right">IMDB Rating&nbsp;</TableCell>
-              <TableCell style={{ color: '#FFFFFF' }} onClick={() => sortByInput('watched')} align="right">Watched&nbsp;</TableCell>
-              <TableCell style={{ color: '#FFFFFF' }} align="right">Your Rating&nbsp;</TableCell>
-              <TableCell style={{ color: '#FFFFFF' }} align="right">Remove&nbsp;</TableCell>
+              {localStorage.isAuth ? <TableCell style={{ color: '#FFFFFF' }} onClick={() => sortByInput('watched')} align="right">Watched&nbsp;</TableCell> : null}
+              {localStorage.isAuth ? <TableCell style={{ color: '#FFFFFF' }} onClick={() => sortByInput('yourRating')} align="right">Your Rating&nbsp;</TableCell> : null}
+              {localStorage.isAuth ? <TableCell style={{ color: '#FFFFFF' }} align="right">Remove&nbsp;</TableCell> : null}
             </TableRow>
           </TableHead>
           <TableBody>
-            {filtered.map((st, index) => {
-              return (
-                (st.originalTitle !== "") ?
-                  <Row key={index} row={st} index={index} /> : null
-              )
-            })}
+            {filtered && filtered.length > 0 && filtered.map((st, index) => {
+              return st.originalTitle && <Row key={index} data={st} index={index} /> 
+            }
+            )}
           </TableBody>
         </Table>
       </TableContainer>

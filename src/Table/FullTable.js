@@ -5,9 +5,11 @@ import './Table.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MaterialTable from './MaterialTable';
 import Box from '@material-ui/core/Box';
+import { getThemeColor } from '../redux/actions';
+import { useSelector } from 'react-redux';
 
 const FullTable = () => {
-
+const themeColor = useSelector(state => state.themeColor)
   console.warn = console.error = () => { };
   return (
     <div style={{
@@ -17,16 +19,12 @@ const FullTable = () => {
       padding: '10px'
     }}>
       <div>
-        <Box width="95%" mt={+5}>
-          <div style={{
-            borderLeft: '2px solid grey',
-            borderRight: '2px solid grey',
-            borderBottom: '2px solid grey'
-          }}>
+        <Box width="95%" mt={+5} boxShadow={50}>
+          <div style={{ border: themeColor.red ? '2px solid red ' : themeColor.blue ? '2px solid darkblue ' :  '2px solid green ' }}>
             <MaterialTable />
           </div>
         </Box>
-        <Box width="95%" mb={+5} mt={3}>
+        <Box width="95%" mb={+5} mt={3} boxShadow={50}>
           <div class='Wrapper'>
             <Pagination />
             <PerPageSelector />

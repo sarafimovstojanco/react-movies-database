@@ -2,26 +2,25 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from '../Navigation/Navbar';
 import SignInCard from './SignInCard';
-import Box from '@material-ui/core/Box';
-
 
 const Auth = () => {
 return (
-  <div >
+  <div style={{height: '100vh'}}>
     <Navbar/>
-    <div style={{
+    <div style={{paddingTop: "100px"}}>
+        <div style={{
         textAlign: 'center',
-        height: '100vh',
         margin: 'auto',
         width: '40%',
-        marginTop: '10%',
         marginBottom: '20%',
+        paddingTop: "10%",
         border: '2px solid grey',
         padding: '80px'
       }}>
         <SignInCard/>
+        </div>
+      </div>
    </div>
-  </div>
 )}
 
 

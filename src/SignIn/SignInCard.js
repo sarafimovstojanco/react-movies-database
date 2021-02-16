@@ -3,15 +3,13 @@ import { Redirect, useHistory } from "react-router-dom";
 import './SignInCard.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import firebase from 'firebase';
-import Spinner from '../Spinner/Spinner'
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { useDispatch, useSelector } from 'react-redux'
-import { getMovies, setDatabase, getTheme, setThemeStyle } from '../redux/actions';
+import { getMovies, setDatabase, setDarkMode, getTheme, setThemeStyle, setDatabaseTheme, setDatabaseDarkMode, getThemeColor } from '../redux/actions';
 
 const SignInCard = () => {
   const dispatch = useDispatch()
-  const loading = useSelector(state => state.loading)
   let [switchSignIn, setSwitchSignIn] = useState(true)
   let [email, setEmail] = useState('')
   let [password, setPassword] = useState('')
@@ -78,8 +76,7 @@ const SignInCard = () => {
       user.updateProfile({
         displayName: firstName})
       dispatch(getMovies())
-      dispatch(getTheme())
-      dispatch(setThemeStyle({ background: '#2E3B55' }))
+      
       localStorage.setItem('userId', userCredential.user.uid)
       history.push('/auth')
       dispatch(setDatabase())
@@ -94,6 +91,11 @@ const SignInCard = () => {
 
   const onSignInHandler = (event) => {
     event.preventDefault()
+    dispatch(setThemeStyle({ background: '#2E3B55' }))
+    dispatch(setDatabaseTheme())
+    dispatch(setDarkMode(false))
+    dispatch(setDatabaseDarkMode())
+    dispatch(getThemeColor())
     dispatch(getMovies())
     dispatch(getTheme())
     validateEmail(email) && validatePassword(password)
@@ -105,7 +107,6 @@ const SignInCard = () => {
     else {
       firebase.auth().signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          console.log(userCredential.user)
           localStorage.setItem('firstName', userCredential.user.displayName)
           localStorage.setItem('userId', userCredential.user.uid)
           localStorage.setItem('isAuth', true)
@@ -151,9 +152,9 @@ const SignInCard = () => {
   )
 
   let signCard = (
-    <div >
+    <div> 
       <div>
-        <div controlId="formBasicEmail">
+        <div controlId="formBasicEmail" >
           {signMessage}
           {!switchSignIn ?
             <div controlId="formBasicEmail" style={{padding:'10px'}}>
@@ -166,7 +167,14 @@ const SignInCard = () => {
           <div className="text-danger">{errors.email}</div>
         </div>
         <div controlId="formBasicPassword" style={{padding:'10px'}}>
-        <TextField id="outlined-basic" label="Password" variant="outlined" onChange={passwordInputHandler}/>
+        <TextField
+          id="outlined-password-input"
+          label="Password"
+          type="password"
+          autoComplete="current-password"
+          variant="outlined"
+          onChange={passwordInputHandler}
+        />
           <div className="text-danger">{errors.password}</div>
         </div>
         <div controlId="formBasicCheckbox">
@@ -179,7 +187,6 @@ const SignInCard = () => {
   )
   console.warn = console.error = () => { };
   return (
-    loading ? <Spinner /> :
     localStorage.isAuth ? <Redirect to={'/table'} /> : signCard
   )
 }

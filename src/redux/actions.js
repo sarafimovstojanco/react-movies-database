@@ -6,7 +6,6 @@ export const getMovies = () => async dispatch => {
     if(localStorage.isAuth){
         axios.get('https://react-movies-database-default-rtdb.firebaseio.com/' + localStorage.userId + '/moviesData.json')
         .then(response => {
-            console.log(response)
             dispatch({
             type: GET_MOVIES,
             payload: {

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
-import Spinner from '../Spinner/Spinner'
 import { useHistory } from 'react-router-dom'
 import { setThemeStyle, setDatabaseTheme, getTheme, userBirthday, setDateDatabase, getThemeColor, setDarkMode, setDatabaseDarkMode } from '../redux/actions'
 import { makeStyles } from '@material-ui/core/styles';
@@ -18,13 +17,11 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import 'date-fns';
 import Button from '@material-ui/core/Button';
-import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch, useSelector } from 'react-redux';
 
 const UserPage = () => {
   const dispatch = useDispatch()
   const themeStyle = useSelector(state => state.themeStyle)
-  const loading = useSelector(state => state.loading)
   const themeColor = useSelector(state => state.themeColor)
   const darkMode = useSelector(state => state.darkMode)
 
@@ -76,16 +73,19 @@ const UserPage = () => {
   const redTheme = () => {
     dispatch(setThemeStyle({ background: '#dc004e' }))
     dispatch(setDatabaseTheme())
+    localStorage.setItem('themeStyle', '#dc004e' )
   };
 
   const blueTheme = () => {
-    dispatch(setThemeStyle({ background: '#2E3B55' }))
+    dispatch(setThemeStyle({ background: '#2E3B55'}))
     dispatch(setDatabaseTheme())
+    localStorage.setItem('themeStyle', '#2E3B55' )
   };
 
   const greenTheme = () => {
     dispatch(setThemeStyle({ background: '#4caf50' }))
     dispatch(setDatabaseTheme())
+    localStorage.setItem('themeStyle', '#4caf50')
   };
 
   const handleChange = (event) => {
@@ -99,12 +99,6 @@ const UserPage = () => {
     setSelectedDate(date);
     dispatch(userBirthday(date))
   };
-
-  const saveDate = () => {
-    dispatch(userBirthday(selectedDate))
-    dispatch(setDateDatabase())
-    //history.push('./')
-  }
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -121,13 +115,12 @@ const UserPage = () => {
   const classes = useStyles();
 
   return (
-    loading ? <Spinner /> :
-   <div > <div className={classes.root}>
+   <div style={{paddingBottom: "80px"}}> <div className={classes.root} >
       <AppBar position="static" style={themeStyle}>
         <Toolbar variant="dense">
           <Box>
-            <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-              Account Settings
+            <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={()=>{history.push('./')}}>
+              Home
           </IconButton></Box>
         </Toolbar>
       </AppBar>
@@ -138,12 +131,12 @@ const UserPage = () => {
         width: '60%',
         marginTop: '50px',
         border: '2px solid grey',
-        padding: '10px'
+        padding: '10px',
       }}>
         <Box pt={3} width={1}>
           <Typography>Update Email/Password</Typography>
         </Box>
-        <Box boxShadow={3} pt={1} pb={3} >
+        <Box boxShadow={15} pt={2} pb={3} >
           <Typography>
             <TextField onChange={(event) => setNewEmailHandler(event)} id="standard-basic" label="User Name" />
             <Box mt={1} pt={1} justifyContent="center">
@@ -152,14 +145,14 @@ const UserPage = () => {
             <TextField onChange={(event) => setNewPasswordHandler(event)} id="standard-basic" label="Password" />
             <Box justifyContent="center" mt={1} pt={1} >
               <Button size="small" variant="contained" onClick={updatePassword}>Update</Button></Box></Typography></Box>
-        <Box justifyContent="center" mt={5}>
+        <Box justifyContent="center" mt={5} mb={2}>
           <Box justifyContent="center" >
             <Typography >Appearance</Typography></Box>
-          <Box justifyContent="center" boxShadow={3} mt={1} >
+          <Box justifyContent="center" boxShadow={15} >
             <a>Activate Dark Mode :</a><Switch
               checked={darkMode}
               onChange={handleChange}
-              color="primary"
+              color="dark"
               name="darkMode"
               inputProps={{ 'aria-label': 'primary checkbox' }}
             />
@@ -195,9 +188,10 @@ const UserPage = () => {
               textAlign: 'center',
               margin: 'auto',
               width: '50%',
+              paddingBottom: "10px"
             }}>
               <Box boxShadow={3} mt={1} mb={5} pt={5} pb={5}>
-                <Box >
+                <Box>
                   <form className={classes.container} noValidate>
                     <TextField
                       id="date"
@@ -213,26 +207,6 @@ const UserPage = () => {
                   </form>
                 </Box>
               </Box></div>
-            <Box pb={3}>
-              <Button
-                variant="contained"
-                color="primary"
-                size="medium"
-                onClick={saveDate}
-                className={classes.button}
-                startIcon={<SaveIcon />}
-              >
-                Save
-      </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                className={classes.button}
-                onClick={() => (history.push('./'))}
-              >
-                Cancel
-      </Button>
-            </Box>
           </Box>
         </Box>
       </div>

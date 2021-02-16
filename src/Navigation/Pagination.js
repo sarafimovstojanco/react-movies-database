@@ -8,8 +8,9 @@ const Pagination = () => {
     const currentPage = useSelector(state => state.currentPage)
     const totalPages = useSelector(state => state.totalPages)
     const searching = useSelector(state =>state.searching)
+    const themeColor = useSelector(state => state.themeColor)
     const pageNumbers = [];
-    
+
     const isActive = number => {
         if (number === currentPage) {
             return 'active'
@@ -27,7 +28,7 @@ const Pagination = () => {
                         <button 
                         className={`button pagination-link ${
                             currentPage === index + 1
-                              ? "is-current"
+                              ? themeColor.red ? "is-danger" : themeColor.green ? "is-success" : "is-current"
                               : ""
                           }`}
                           aria-label="Page 1"

@@ -4,25 +4,22 @@ import Home from './Home/Home'
 import Auth from './SignIn/Auth'
 import AddMovie from './AddMovie/AddMovie'
 import UserPage from './UserProfile/UserPage';
-import {Provider} from 'react-redux';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Box from '@material-ui/core/Box';
 import Paper from "@material-ui/core/Paper";
-import {createStore, compose, applyMiddleware} from 'redux';
-import thunk from 'redux-thunk';
-import reducer from './redux/reducer';
+import Spinner from './Spinner/Spinner'
 import { useSelector, useDispatch } from 'react-redux';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { getMovies, getDarkMode } from './redux/actions'
+import { getMovies, getDarkMode, getThemeColor } from './redux/actions'
 
 const App = _ => {
+const dispatch = useDispatch()
+const loading = useSelector(state => state.loading)
+const darkMode = useSelector(state => state.darkMode)
+
 console.warn = console.error = () => {};
 
-const darkMode = useSelector(state => state.darkMode)
   let mode = darkMode ? '(prefers-color-scheme: dark)' : '(prefers-color-scheme: light)'
-  console.log(mode)
-  console.log(darkMode)
   const prefersDarkMode =useMediaQuery(mode)
 
   const theme = React.useMemo(
@@ -34,14 +31,14 @@ const darkMode = useSelector(state => state.darkMode)
       }),
     [prefersDarkMode],
   );
-    const dispatch = useDispatch()
     useEffect(() => {
         dispatch(getMovies())
         dispatch(getDarkMode())
+        dispatch(getThemeColor())
     }, [])
 
 return (
-  <div style = {{height: '100vh'}}>
+  loading ? <Spinner/> : <div style = {{height: '100vh'}}>
   <Paper height="100%">
   <ThemeProvider theme={theme}>
     <CssBaseline/>
