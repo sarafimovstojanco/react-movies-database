@@ -1,0 +1,51 @@
+version: '3.1'
+
+services:
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    depends_on: 
+      - backend
+    networks: 
+      - app
+
+  backend:
+    container_name: react-movies_api
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    environment: 
+      DB_HOST: db
+      DB_DATABASE: react_movies
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    ports: 
+      - 8000:8000
+    volumes: 
+      - .:/app
+    depends_on: 
+      - db
+    networks: 
+      - app
+
+  db:
+    container_name: react-movies_db
+    image: mysql:5.7.22
+    environment: 
+      MYSQL_DATABASE: react_movies
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+    volumes: 
+      - .dbdata:/var/lib/mysql
+    ports: 
+      - 33066:3306
+    networks: 
+      - app
+
+networks: 
+    app:
