@@ -1,27 +1,42 @@
 import React, { useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Home.css';
-import Navbar from '../Navigation/Navbar';
 import FullTable from '../Table/FullTable';
 import { useDispatch } from 'react-redux'
-import { getMovies, getDarkMode, getTheme, getThemeColor } from '../redux/actions'
+import { getMovies, getUser } from '../redux/actions'
+import Warning from '../Spinner/Warning';
+import ClippedDrawer from '../Navigation/Drawer';
 
 const Home = () => {
 
     const dispatch = useDispatch()
     useEffect(() => {
+        dispatch(getUser())
         dispatch(getMovies())
-        dispatch(getDarkMode())
-        dispatch(getThemeColor())
     }, [])
-    
-return (
-    <> 
-    <div style={{padding: "3%"}}>
-        <Navbar />
-        <FullTable />
-        </div>
-    </>
-)
+
+    return (
+        <>
+            <div style={{ padding: "3%" }}>
+                <ClippedDrawer />
+                <div style={{
+                    marginTop: '3%',
+                    marginBottom: '10%',
+                    marginLeft: '13%',
+                    position: ' absolute',
+                    zIndex: '10',
+                }}>
+                    <Warning />
+                </div>
+                <div style={{
+                    marginTop: '8%',
+                    marginLeft: '15%',
+                    paddingLeft: '4%'
+                    }}>
+                <FullTable />
+                </div>
+            </div>
+        </>
+    )
 }
 export default Home

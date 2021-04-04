@@ -14,17 +14,19 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { useDispatch, useSelector } from 'react-redux';
-import { filterByValue, loadExactPage, getTheme} from '../redux/actions'
-import firebase from 'firebase'
+import { filterByValue, loadExactPage, getUser, getMovies} from '../redux/actions'
+import axios from 'axios'
 
 const Navbar = () => {
   const dispatch = useDispatch()
   const [input, setInput] = useState("")
   const currentPage = useSelector(state => state.currentPage)
   const themeStyle = useSelector(state => state.themeStyle)
+  const firstName = useSelector(state => state.firstName)
+  const [filteredReturn, setFilteredReturn] = useState('');
   let history = useHistory()
   useEffect(() => {
-    dispatch(getTheme())
+    dispatch(getUser())
   }, [])
 
   useEffect(() => {
@@ -36,9 +38,11 @@ const Navbar = () => {
 
   const filterByInput = (input) => {
     if (!input) {
-      dispatch(loadExactPage(currentPage))
+      dispatch(getMovies())
     }
-    dispatch(filterByValue({ value: input }))
+  else axios.post('http://127.0.0.1:8000/api/movies/filtered', {filter: input, userId: localStorage.userId}).then(response=>{
+   dispatch(filterByValue({ value: input, filtered: response.data }))
+  })
   }
 
   const useStyles = makeStyles((theme) => ({
@@ -150,7 +154,6 @@ const Navbar = () => {
   }
 
   const onLogoutHandler = () => {
-    firebase.auth().signOut()
     localStorage.removeItem('userId')
     localStorage.removeItem('isAuth')
     localStorage.removeItem('firstName')
@@ -205,15 +208,6 @@ const Navbar = () => {
     <div className={classes.grow} style={{marginBottom: '50px'}}>
       <AppBar style={themeStyle} position="fixed" >
         <Toolbar>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="open drawer"
-            onClick={() => history.push('/')}
-          >
-           {localStorage.isAuth ? localStorage.firstName.toUpperCase() : "RMD"} 
-              </IconButton>
           <Button color="inherit" edge="start"
             className={classes.menuButton}
             color="inherit"

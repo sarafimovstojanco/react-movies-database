@@ -3,7 +3,7 @@ import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
 import { useHistory } from 'react-router-dom'
-import { setThemeStyle, setDatabaseTheme, getTheme, userBirthday, setDateDatabase, getThemeColor, setDarkMode, setDatabaseDarkMode } from '../redux/actions'
+import { warning, clearWarning, setUser, getUser } from '../redux/actions'
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -18,6 +18,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import 'date-fns';
 import Button from '@material-ui/core/Button';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import qs from 'qs';
+import Warning from '../Spinner/Warning';
+import Avatars from '../Spinner/Avatars';
+
 
 const UserPage = () => {
   const dispatch = useDispatch()
@@ -27,11 +32,10 @@ const UserPage = () => {
 
   let history = useHistory()
   useEffect(() => {
-    dispatch(getTheme())
-    dispatch(getThemeColor())
+    dispatch(getUser())
   }, [])
 
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(darkMode);
 
   const GreenCheckbox = withStyles({
     root: {
@@ -52,54 +56,66 @@ const UserPage = () => {
   const setNewPasswordHandler = (event) => {
     setNewPassword(event.target.value)
   }
-  const user = firebase.auth().currentUser;
-
   const updateEmail = () => {
-    user.updateEmail(newEmail).then(function () {
-      console.log(user)
-    }).catch(function (error) {
-      console.log(error)
-    });
+    axios({
+      method: 'put',
+      url: 'http://127.0.0.1:8000/api/users/' + localStorage.userId,
+      data: qs.stringify({
+          email: newEmail,
+      }),
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      }
+    })
+  .then(response=>{
+    dispatch(warning('emailChanged'))
+    setTimeout(() => {
+      dispatch(clearWarning())
+    }, 2000)
+    console.log(response)})
+  .catch(error=>console.log(error))
   }
   const updatePassword = () => {
-    user.updatePassword(newPassword).then(function () {
-      console.log(user)
-
-    }).catch(function (error) {
-      console.log(error)
-    });
+    axios({
+      method: 'put',
+      url: 'http://127.0.0.1:8000/api/users/' + localStorage.userId,
+      data: qs.stringify({
+          password: newPassword,
+      }),
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      }
+    })
+  .then(response=>{
+    dispatch(warning('passwordChanged'))
+    setTimeout(() => {
+      dispatch(clearWarning())
+    }, 2000)
+      console.log(response)})
+  .catch(error=>console.log(error))
   }
 
   const redTheme = () => {
-    dispatch(setThemeStyle({ background: '#dc004e' }))
-    dispatch(setDatabaseTheme())
+    dispatch(setUser({ background: '#dc004e', color: 'red' , dark_mode: darkMode}))
     localStorage.setItem('themeStyle', '#dc004e' )
   };
 
   const blueTheme = () => {
-    dispatch(setThemeStyle({ background: '#2E3B55'}))
-    dispatch(setDatabaseTheme())
+    dispatch(setUser({ background: '#2E3B55', color: 'blue', dark_mode: darkMode }))
     localStorage.setItem('themeStyle', '#2E3B55' )
   };
 
   const greenTheme = () => {
-    dispatch(setThemeStyle({ background: '#4caf50' }))
-    dispatch(setDatabaseTheme())
+    dispatch(setUser({ background: '#4caf50', color: 'green', dark_mode: darkMode}))
     localStorage.setItem('themeStyle', '#4caf50')
   };
 
   const handleChange = (event) => {
+    console.log(event.target.checked)
     setDark(event.target.checked)
-    dispatch(setDarkMode(event.target.checked))
-    dispatch(setDatabaseDarkMode())
+    const background = themeStyle.background
+    dispatch(setUser({background, color: themeColor, dark_mode: event.target.checked }))
   }
-  const [selectedDate, setSelectedDate] = React.useState(new Date('2021-01-01T21:11:54'));
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    dispatch(userBirthday(date))
-  };
-
   const useStyles = makeStyles((theme) => ({
     root: {
       flexGrow: 1,
@@ -124,6 +140,12 @@ const UserPage = () => {
           </IconButton></Box>
         </Toolbar>
       </AppBar>
+    </div>
+    <div style={{
+      marginLeft: '7%',
+      marginTop: '2%'
+    }}>
+      <Warning />
     </div>
       <div style={{
         textAlign: 'center',
@@ -161,13 +183,13 @@ const UserPage = () => {
               <Box>
                 <a>Select Theme: </a></Box>
               <FormControlLabel
-                control={<Checkbox checked={themeColor.red} onChange={redTheme} name="checkedR" />}
+                control={<Checkbox checked={themeColor==="red"} onChange={redTheme} name="checkedR" />}
                 label="Red"
               />
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={themeColor.blue}
+                    checked={themeColor==="blue"}
                     onChange={blueTheme}
                     name="checkedB"
                     color="primary"
@@ -176,35 +198,27 @@ const UserPage = () => {
                 label="Blue"
               />
               <FormControlLabel
-                control={<GreenCheckbox checked={themeColor.green} onChange={greenTheme} name="checkedG" />}
+                control={<GreenCheckbox checked={themeColor==="green"} onChange={greenTheme} name="checkedG" />}
                 label="Green"
               />
             </Box>
             <Divider />
             <Box pt={3}>
-              <a>Select your Birthday:</a>
+              <a>Select your Avatar:</a>
             </Box>
             <div style={{
               textAlign: 'center',
               margin: 'auto',
-              width: '50%',
+              width: '80%',
               paddingBottom: "10px"
             }}>
               <Box boxShadow={3} mt={1} mb={5} pt={5} pb={5}>
                 <Box>
-                  <form className={classes.container} noValidate>
-                    <TextField
-                      id="date"
-                      label="Birthday"
-                      type="date"
-                      defaultValue="2017-05-24"
-                      onChange={handleDateChange}
-                      className={classes.textField}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                  </form>
+                <div style={{
+                  marginLeft: '10%'
+                }}>
+                  <Avatars/>
+                </div>
                 </Box>
               </Box></div>
           </Box>

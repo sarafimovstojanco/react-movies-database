@@ -5,22 +5,20 @@ import './Table.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MaterialTable from './MaterialTable';
 import Box from '@material-ui/core/Box';
-import { getThemeColor } from '../redux/actions';
 import { useSelector } from 'react-redux';
 
 const FullTable = () => {
+
 const themeColor = useSelector(state => state.themeColor)
   console.warn = console.error = () => { };
   return (
     <div style={{
       textAlign: 'center',
-      margin: 'auto',
-      width: '90%',
-      padding: '10px'
+      width: '100%',
     }}>
       <div>
         <Box width="95%" mt={+5} boxShadow={50}>
-          <div style={{ border: themeColor.red ? '2px solid red ' : themeColor.blue ? '2px solid darkblue ' :  '2px solid green ' }}>
+          <div style={{ border: themeColor==='red' ? '2px solid red ' : themeColor==='blue' ? '2px solid darkblue ' :  '2px solid green ' }}>
             <MaterialTable />
           </div>
         </Box>

@@ -10,17 +10,19 @@ import Spinner from './Spinner/Spinner'
 import { useSelector, useDispatch } from 'react-redux';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { getMovies, getDarkMode, getThemeColor } from './redux/actions'
+import { getMovies, getUser} from './redux/actions'
+import UpdatePassword from './SignIn/UpdatePassword';
 
-const App = _ => {
+const App = () => {
 const dispatch = useDispatch()
 const loading = useSelector(state => state.loading)
 const darkMode = useSelector(state => state.darkMode)
+console.log(darkMode)
 
 console.warn = console.error = () => {};
 
   let mode = darkMode ? '(prefers-color-scheme: dark)' : '(prefers-color-scheme: light)'
-  const prefersDarkMode =useMediaQuery(mode)
+  const prefersDarkMode = useMediaQuery(mode)
 
   const theme = React.useMemo(
     () =>
@@ -32,19 +34,19 @@ console.warn = console.error = () => {};
     [prefersDarkMode],
   );
     useEffect(() => {
+        dispatch(getUser())
         dispatch(getMovies())
-        dispatch(getDarkMode())
-        dispatch(getThemeColor())
     }, [])
 
 return (
-  loading ? <Spinner/> : <div style = {{height: '100vh'}}>
+  loading ? <Spinner/> : <div styles = {{height: '100vh'}}>
   <Paper height="100%">
   <ThemeProvider theme={theme}>
     <CssBaseline/>
     <BrowserRouter>
       <Switch>
         <Route path={'/auth'} component={Auth} />
+        <Route path={'/password'} component={UpdatePassword} />
         <Route path={'/add-movie'} component={AddMovie} />
         <Route path={'/user-page'} component={UserPage} />
         <Route path={'/'} component={Home} />

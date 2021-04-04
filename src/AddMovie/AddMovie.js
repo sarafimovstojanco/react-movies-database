@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Redirect } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
-import { getMovies, getDarkMode, getTheme } from '../redux/actions'
+import { getMovies, getDarkMode, getUser } from '../redux/actions'
 import "bulma/css/bulma.min.css"
 import Navbar from '../Navigation/Navbar';
 import AddInput from './AddInput'
@@ -14,9 +14,8 @@ const AddMovie = () => {
     const dispatch = useDispatch()
     
     useEffect(() => {
+        dispatch(getUser())
         dispatch(getMovies())
-        dispatch(getDarkMode())
-        dispatch((getTheme))
     }, [])
 
     return (
@@ -33,7 +32,7 @@ const AddMovie = () => {
                         <AddInput />
                     </Box>
                     <Box mt={+8} >
-                    <div style={{ border: themeColor.red ? '2px solid red ' : themeColor.blue ? '2px solid darkblue ' :  '2px solid green ' }}>
+                    <div style={{ border: themeColor==='red' ? '2px solid red ' : themeColor==='blue' ? '2px solid darkblue ' :  '2px solid green ' }}>
                             <MaterialTable />
                         </div>
                     </Box>

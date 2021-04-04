@@ -21,7 +21,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useDispatch, useSelector } from 'react-redux'
-import { setWatched, setDatabase, sortBy, loadExactPage, yourRating, removeMovie, getMovies } from '../redux/actions'
+import { warning, clearWarning, reloadMovies, sortBy, loadExactPage, setUnwatchedDatabase, setRatingDatabase, setWatchedDatabase, setRecent, getMovies, getUser, unsetRecent } from '../redux/actions'
+import axios from 'axios';
 
 const useRowStyles = makeStyles({
   root: {
@@ -44,30 +45,63 @@ const GreenCheckbox = withStyles({
 const Row = ({data, index}) => {
   const dispatch = useDispatch()
   const classes = useRowStyles();
-  const filtered = useSelector(state => state.filteredMovies)
-  const [rating, setRating] = useState(filtered.yourRating)
+  const searching = useSelector(state => state.searching)
+  const filtered =useSelector(state => state.filteredMovies)
+  const userId = useSelector(state => state.userId)
+  const currentPage = useSelector(state=> state.currentPage)
+  const perPage = useSelector(state=>state.countPerPage)
+  const [rating, setRating] = useState(data.rating)
   const [open, setOpen] = useState(false)
   const [state, setState] = useState({checkedG: true})
 
   const handleChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
   }
-
-  const removeMovieFunction = ranked => {
-    dispatch(removeMovie(index, ranked))
-    dispatch(setDatabase())
+  const removeMovieFunction = (id, title) => {
+    axios.delete('http://127.0.0.1:8000/api/movies/' + id).then(response=>{
+      dispatch(reloadMovies(currentPage, perPage))
+      dispatch(warning('delete', title))
+      setTimeout(() => {
+        dispatch(clearWarning())
+      }, 2000)
+      }
+    )
+  }
+  const onWatchedHandler = (id, title) => {
+    if (!data.watched){
+      data.watched = true
+      dispatch(setWatchedDatabase(id, title))
+      setRating(null)
+      dispatch(setRecent(id))
+      dispatch(warning('watchedSuccess', title))
+      setTimeout(() => {
+        dispatch(clearWarning())
+      }, 2000)
+    }
+    else {
+      data.watched = false
+      setRating(null)
+      dispatch(setUnwatchedDatabase(id, title))
+    }
   }
 
-  const onClickHandler = ranked => {
-    dispatch(setWatched(index, ranked))
-    dispatch(setDatabase())
+  const onRatingChange = (id, rating, title) => {
+    if (data.watched){
+      setRating(rating)
+      dispatch(setRatingDatabase(id, rating, title))
+      dispatch(warning('ratingChange', title))
+      setTimeout(() => {
+        dispatch(clearWarning())
+      }, 2000)
+    }
+    else {
+      dispatch(warning('warning', title))
+      setTimeout(() => {
+        dispatch(clearWarning(warning))
+      }, 2000)
+    }
   }
 
-  const onRatingChange = (rating) => {
-    setRating(rating)
-    dispatch(yourRating(rating, index, data.ranked ))
-    dispatch(setDatabase())
-  }
   return (
     <React.Fragment>
       <TableRow className={classes.root}>
@@ -78,7 +112,7 @@ const Row = ({data, index}) => {
         </TableCell>
         <TableCell component="th" scope="row">
           <div style={{ fontSize: '20px' }}>
-            {data.originalTitle}
+            {data.title}
           </div>
         </TableCell>
         <TableCell align="right">
@@ -91,18 +125,18 @@ const Row = ({data, index}) => {
         </TableCell>
        {localStorage.isAuth ? <TableCell align="right">
           <FormControlLabel
-            control={<GreenCheckbox checked={data.watched} onClick={() => onClickHandler(data.ranked)} onChange={handleChange} name="checkedG" />}
+            control={<GreenCheckbox checked={data.watched} onClick={() => onWatchedHandler(data.id, data.title)} onChange={handleChange} name="checkedG" />}
             label="Watched"
           />
         </TableCell> : null}
         {localStorage.isAuth ? <TableCell align="right">
           <Rating
-            value={data.yourRating ? data.yourRating : null}
-            onChange={(e, rating) => onRatingChange(rating)}
+            value= {data.watched ? rating : null}
+            onChange={(e, rating, title) => onRatingChange(data.id, rating, data.title)}
           />
         </TableCell> : null}
         {localStorage.isAuth ? <TableCell align="right">
-          <IconButton aria-label="delete" onClick={() => removeMovieFunction(data.originalTitle)}>
+          <IconButton aria-label="delete" onClick={() => removeMovieFunction(data.id, data.title)}>
             <DeleteIcon fontSize="medium" />
           </IconButton>
         </TableCell>  : null}
@@ -123,7 +157,7 @@ const Row = ({data, index}) => {
                   <TableHead>
                     <TableRow>
                       {data.actors.map((actor) =>
-                        <li>{actor}</li>)
+                        <li>{actor.name}</li>)
                       }
                     </TableRow>
                   </TableHead>
@@ -140,12 +174,13 @@ const Row = ({data, index}) => {
 }
 
 const MaterialTable = () => {
+  
   const dispatch = useDispatch()
   const themeStyle = useSelector(state => state.themeStyle)
   const searching = useSelector(state => state.searching)
   const currentPage = useSelector(state => state.currentPage)
   const [order, setOrder] = useState(true)
-  const filtered = useSelector(state => (state.filteredMovies))
+  const filtered =useSelector(state => state.filteredMovies)
   //const updateState = useSelector(state => (state)) //needed for rendering the table after input
   useEffect(()=>{
     dispatch(loadExactPage(currentPage))
@@ -201,19 +236,19 @@ const MaterialTable = () => {
               <TableCell />
               <TableCell>
                 <Typography style={{ color: '#FFFFFF' }} className={classes.title} variant="h6" id="tableTitle" component="div"
-                  onClick={() => sortByInput('originalTitle')}>Movie Title
+                  onClick={() => sortByInput('title')}>Movie Title
                 </Typography>
               </TableCell>
               <TableCell style={{ color: '#FFFFFF' }} onClick={() => sortByInput('year')} align="right">Year</TableCell>
               <TableCell style={{ color: '#FFFFFF' }} onClick={() => sortByInput('imdbRating')} align="right">IMDB Rating&nbsp;</TableCell>
               {localStorage.isAuth ? <TableCell style={{ color: '#FFFFFF' }} onClick={() => sortByInput('watched')} align="right">Watched&nbsp;</TableCell> : null}
-              {localStorage.isAuth ? <TableCell style={{ color: '#FFFFFF' }} onClick={() => sortByInput('yourRating')} align="right">Your Rating&nbsp;</TableCell> : null}
+              {localStorage.isAuth ? <TableCell style={{ color: '#FFFFFF' }} onClick={() => sortByInput('rating')} align="right">Your Rating&nbsp;</TableCell> : null}
               {localStorage.isAuth ? <TableCell style={{ color: '#FFFFFF' }} align="right">Remove&nbsp;</TableCell> : null}
             </TableRow>
           </TableHead>
           <TableBody>
             {filtered && filtered.length > 0 && filtered.map((st, index) => {
-              return st.originalTitle && <Row key={index} data={st} index={index} /> 
+              return st.title && <Row key={index} data={st} index={index} /> 
             }
             )}
           </TableBody>

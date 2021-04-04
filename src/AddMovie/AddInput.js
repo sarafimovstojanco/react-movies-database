@@ -7,9 +7,11 @@ import FormControl from '@material-ui/core/FormControl';
 import Box from '@material-ui/core/Box';
 import Select from '@material-ui/core/Select';
 import { useDispatch} from 'react-redux';
-import { setDatabase, newMovieAddition} from '../redux/actions'
+import { addNewMovie } from '../redux/actions'
 import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import qs from 'qs';
 
 const AddInput = () => {
   const dispatch = useDispatch()
@@ -19,7 +21,7 @@ const AddInput = () => {
     imdbRating: '',
     originalTitle: '',
     year: '',
-    watched: null
+   //watched: null
   })
 
   const addMovieRating = (event) => {
@@ -40,9 +42,68 @@ const AddInput = () => {
       year: event.target.value
     })
   }
-  const addNewMovie = () => {
-    dispatch(newMovieAddition(newMovie))
-    dispatch(setDatabase())
+  const addFirstMainActor = (event) => {
+    setNewMovie({
+      ...newMovie,
+      firstActor: event.target.value
+    })
+  }
+  const addSecondMainActor = (event) => {
+    setNewMovie({
+      ...newMovie,
+      secondActor: event.target.value
+    })
+  }
+  const addThirdMainActor = (event) => {
+    setNewMovie({
+      ...newMovie,
+      thirdActor: event.target.value
+    })
+  }
+  const inputNewMovie = () => {
+    const movie = {
+      title: newMovie.originalTitle,
+      imdbRating: newMovie.imdbRating,
+      year: newMovie.year
+  }
+  // axios({
+  //   method: 'post',
+  //   url: 'http://127.0.0.1:8000/api/movies',
+  //   data: qs.stringify({
+  //     title: newMovie.originalTitle,
+  //     imdbRating: newMovie.imdbRating,
+  //     year: newMovie.year,
+  //   }),
+  //   headers: {
+  //     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+  //   }
+  // })
+  axios.post('http://127.0.0.1:8000/api/movies', movie)
+  .then(response=>{
+    const id= response.data.id
+      let actors = {
+          actor: newMovie.firstActor,
+          type: 'Movies',
+          id: id
+      }
+     return axios.post('http://127.0.0.1:8000/api/actors', actors)
+       .then(response=>{
+         actors = {
+          actor: newMovie.secondActor,
+          type: 'Movies',
+          id: id
+      }
+     return axios.post('http://127.0.0.1:8000/api/actors', actors)
+       .then(response=>{
+         actors = {
+          actor: newMovie.thirdActor,
+          type: 'Movies',
+          id: id
+      }
+     return axios.post('http://127.0.0.1:8000/api/actors', actors)
+        })
+       })
+     })
   }
 
   const useStyles = makeStyles((theme) => ({
@@ -91,9 +152,12 @@ const AddInput = () => {
             <MenuItem value={"Not Watched"}>Not Watched</MenuItem>
           </Select>
         </FormControl>
+        <TextField id="outlined-basic" label="Main Actors..." variant="outlined" onChange={addFirstMainActor} />
+        <TextField id="outlined-basic" label="Main Actors..." variant="outlined" onChange={addSecondMainActor} />
+        <TextField id="outlined-basic" label="Main Actors..." variant="outlined" onChange={addThirdMainActor} />
       </form>
       <Box mt={+2} >
-        <Button variant="contained" onClick={addNewMovie}>Add Movie</Button>
+        <Button variant="contained" onClick={inputNewMovie}>Add Movie</Button>
       </Box>
     </Box>
   );

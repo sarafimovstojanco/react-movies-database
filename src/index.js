@@ -15,9 +15,6 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducer, composeEnhancers(
   applyMiddleware(thunk)
 ))
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(config);
-}
 
 ReactDOM.render(
   <Provider store={store}>

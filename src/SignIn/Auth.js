@@ -1,6 +1,7 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from '../Navigation/Navbar';
+import SignInBackend from './SignInBackend';
 import SignInCard from './SignInCard';
 
 const Auth = () => {
@@ -17,7 +18,7 @@ return (
         border: '2px solid grey',
         padding: '80px'
       }}>
-        <SignInCard/>
+        <SignInBackend/>
         </div>
       </div>
    </div>
