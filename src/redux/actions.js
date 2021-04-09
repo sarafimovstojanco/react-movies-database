@@ -290,17 +290,6 @@ export const addNewMovie = newMovie => {
     })
 }
 
-export const removeMovie = (id) => {
- 
-    // return dispatch => {
-    //     dispatch({
-    //         type: REMOVE_MOVIE,
-    //         index: index,
-    //         originalTitle: originalTitle
-    //     })
-    // }
-}
-
 export const userBirthday = date => {
     return dispatch => {
         dispatch({

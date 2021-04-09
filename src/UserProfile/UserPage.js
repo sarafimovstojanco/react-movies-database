@@ -10,7 +10,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Switch from '@material-ui/core/Switch';
-import firebase from 'firebase';
 import { withStyles } from '@material-ui/core/styles';
 import { green } from '@material-ui/core/colors'
 import Checkbox from '@material-ui/core/Checkbox';
